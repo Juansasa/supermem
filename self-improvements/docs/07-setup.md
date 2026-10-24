@@ -107,7 +107,7 @@ The user: "ensure selfim arg have intuitive naming". One entry point; everything
 | Command | Does |
 |---|---|
 | `/selfim` | the main entry: turns selfim on here (first time: settings questions), shows status, and offers to learn from history when there's a lot unprocessed |
-| `/selfim learn` | learn from captured sessions now (runs the review) |
+| `/selfim learn` | learn from everything not yet processed: captured sessions and existing history (past sessions, git commits, repo structure). Shows the estimated cost first when it's large. This is what `/selfim` offers on first use (the user: "to me selfim running first time is /selfim learn if prompted") |
 | `/selfim settings` | change the setup answers |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; turning off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |

@@ -130,7 +130,7 @@ The session-start hook can't ask questions, so when such a backlog builds up it 
    | native memory and instructions ([Native sources](#native-sources-read-only)) | what is already known |
 
 2. `/selfim` shows what was found and the estimated cost, e.g. "42 past sessions, 380 commits; areas: helm, gitops, java. Learning from this ≈ X tokens / $Y", and asks: **learn from history** or **start fresh** (for a backlog: **learn now** or **later**).
-3. On "learn", one capped review run turns it into records. Findings that already repeat across past sessions can go straight to trial; git-derived coding decisions start as decisions with `source: observed`.
+3. Choosing "learn" is the same as running `/selfim learn`: one action that processes **all** unprocessed data, existing history and captured sessions alike. One capped review run turns it into records. Findings that already repeat across past sessions can go straight to trial; git-derived coding decisions start as decisions with `source: observed`.
 
 "Start fresh" marks the existing history as skipped (recorded in the cursors below), so it isn't offered again; the baseline then builds up from new sessions.
 

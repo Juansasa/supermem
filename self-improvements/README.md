@@ -36,12 +36,12 @@ flowchart TD
   S --> E["repo enabled<br/>(+ subprojects, if any)"]
   F -- "setup already done" --> E
   E --> B{"history found:<br/>past sessions, git commits, repo structure<br/>est. cost X tokens"}
-  B -- "learn from history" --> R["one capped learning run<br/>seeds records + baseline"]
+  B -- "learn (= /selfim learn)" --> R["one capped learning run<br/>seeds records + baseline"]
   B -- "start fresh" --> W["work as usual"]
   R --> W
 ```
 
-When a repo is turned on, and later whenever a lot of unprocessed data has built up, `/selfim` asks whether to **learn from history** (past Claude Code sessions, git commits and coding decisions, repo structure, existing memory and CLAUDE.md) or **start fresh**, showing the estimated token cost first. There's no separate command for it. Existing CLAUDE.md, rules and auto memory are treated as already known and never injected again.
+When a repo is turned on, and later whenever a lot of unprocessed data has built up, `/selfim` asks whether to **learn from history** (past Claude Code sessions, git commits and coding decisions, repo structure, existing memory and CLAUDE.md) or **start fresh**, showing the estimated token cost first. Accepting runs `/selfim learn`, the same command you can run any time. Existing CLAUDE.md, rules and auto memory are treated as already known and never injected again.
 
 Setup also allows `selfim note` (so notes never trigger a permission prompt) and reads Claude Code's transcript retention. Change answers any time with `/selfim settings`.
 
@@ -63,7 +63,7 @@ Capture itself is silent: hooks log evidence as you work, and a script digests e
 | Command | Does |
 |---|---|
 | `/selfim` | the main entry. First time: settings + turn on for this repo. Later: turn on here if off, otherwise show status (queue, trials, cost vs. savings, suggestions) and offer to learn when a lot is unprocessed |
-| `/selfim learn` | learn from captured sessions now: record changes, one git commit each |
+| `/selfim learn` | learn from everything not yet processed: captured sessions and existing history. Shows the estimated cost first when it's large; record changes, one git commit each. On first use, `/selfim` offers exactly this |
 | `/selfim settings` | change the setup answers |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
