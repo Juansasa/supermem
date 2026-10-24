@@ -28,6 +28,7 @@ Each record's load level decides where it appears and what it costs:
 | trigger | body of its `selfim-<area>` skill; pitfalls in `out/triggers.json` | body of `selfim-project`; pitfalls in the project's `triggers.json` | per load or match |
 | search | not loaded; read on demand from the repo | not loaded; listed by id in `index.md` | per lookup |
 
+- **Why a hook, not CLAUDE.md:** the user considered referencing selfim from the project's CLAUDE.md or a `.claude/rules/selfim.md` file and chose the hook ("hook is better"). Hook injection loads only in enabled projects, is measured exactly, and writes nothing into the project. The injected block starts with a one-line header naming its source and size (`selfim · <project> · N items · ~X tokens`) so its origin is visible in the session **(my call)**.
 - **Starting level** for a record that goes on trial **(my call)**: rules, facts and decisions start at `always` while the always-loaded budget allows (otherwise `trigger`); pitfalls start at `trigger`. After that, the level follows value ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
 - A session pays only skill descriptions until a body loads. A helm session never pays for gitops rules.
 - The project index is one line per item, for the current project only.
