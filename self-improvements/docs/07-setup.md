@@ -11,7 +11,8 @@ Default location: `~/.selfim` **(my call)**. Not the plugin's data folder: that 
 The user: "selfim should be false be default, and enabled by user on first call /selfim".
 
 - The plugin's hooks are registered machine-wide, but **every hook first checks whether the current project is enabled** in `registry.json` and exits immediately if not (no logging, no injection). Until setup has run, hooks do nothing except a one-line hint at session start in a git repo: "selfim is installed; run /selfim to enable it here".
-- `/selfim` in a repo: the first time, it runs setup (below) and enables that project. In any later repo, it only enables that project (`selfim enable`), without repeating setup. `selfim disable` turns a project off again; its data stays.
+- `/selfim` in a repo: the first time, it runs setup (below) and enables that project. In any later repo, it only enables that project (`selfim enable`), without repeating setup. `selfim disable` turns a project off again; its data stays. In an already-enabled repo, `/selfim` shows status: queued sessions, records on trial, cost vs. savings, pending suggestions **(my call)**.
+- Uninstalling the plugin stops all hooks; the runtime repo stays. Full cleanup means removing the `selfim-*` skill links from `~/.claude/skills/` and enabled projects ([README](../README.md#uninstall)).
 - Enablement lives in `registry.json`, keyed by the project's identity, so all worktrees and clones of an enabled repo are enabled, and nothing is written into the project to switch selfim on.
 - Cost in disabled repos: hook processes still start and exit (a few ms each; the synchronous pre-command hook runs on every tool call). This latency is in the [ledger](05-lifecycle.md#whole-solution-ledger).
 

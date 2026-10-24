@@ -12,6 +12,66 @@ A Claude Code plugin (skill + hooks + CLI) that makes agent sessions improve ove
 
 **Success metric:** fewer user interventions (corrections, denials, interrupts, re-explanations). **Secondary:** token cost. selfim keeps a ledger of its own total cost (injected context, hooks, notes, review runs) against what it saves.
 
+## Using selfim
+
+### What gets delivered
+
+One Claude Code plugin, installed once per machine:
+
+| Part | What it is |
+|---|---|
+| hooks | registered machine-wide; do nothing in repos where selfim isn't enabled |
+| `/selfim` skill | the user entry point: setup, enable, status, review |
+| `selfim` CLI | on PATH while the plugin is enabled; used by the skill, the hooks and the agent (`selfim note`) |
+
+Everything selfim learns lives in a separate git repo (default `~/.selfim`), not in the plugin and not in your projects.
+
+### Install and first run
+
+```mermaid
+flowchart TD
+  I["/plugin install selfim"] --> D["selfim is installed but off.<br/>Sessions in a git repo show one hint:<br/>run /selfim to enable it here"]
+  D --> F{"/selfim in a repo"}
+  F -- "first time on this machine" --> S["setup prompts:<br/>1 new runtime repo or clone existing<br/>2 hook groups<br/>3 review by hand or automatic<br/>4 backfill past sessions?"]
+  S --> E["repo enabled<br/>(+ subprojects, if any)"]
+  F -- "setup already done" --> E
+  E --> W["work as usual"]
+```
+
+Setup also allows `selfim note` (so notes never trigger a permission prompt) and reads Claude Code's transcript retention. Re-run it any time with `/selfim setup`.
+
+### Day to day, in an enabled repo
+
+| You'll notice | When |
+|---|---|
+| nothing extra in the session, at first | until selfim has learned something about this repo or area |
+| a short block of rules and a project index at session start | once records exist for the machine or the project (capped at 10k chars) |
+| a one-line warning before a command | a known pitfall matches it; proven pitfalls may block instead |
+| the agent writing a short `selfim note` | right after you correct it, state a decision, or it fixes a failure |
+| `selfim-<area>` and `selfim-project` skills in the skill list | once selfim has distilled knowledge for that area or project |
+| a one-line reminder at session start | reviews are by hand and enough sessions are queued |
+
+Capture itself is silent: hooks log evidence as you work, and a script digests each session when it ends (killed sessions are picked up at the next start).
+
+### Commands
+
+| Command | Does |
+|---|---|
+| `/selfim` | first run: setup + enable this repo. Later: enable this repo if off, otherwise show status (queue, trials, cost vs. savings, pending suggestions) |
+| `/selfim review` | run the offline review now: turns queued sessions into record changes, one git commit each |
+| `/selfim setup` | change setup answers |
+| `selfim enable --subpath <dir>` | declare a subproject inside this repo |
+| `selfim disable` | stop selfim in this repo; its data stays |
+| `selfim note …` | used by the agent when prompted; fields, not prose |
+
+### Reviewing what selfim did
+
+Everything is in the selfim repo's git history: `git -C ~/.selfim log` shows each change with what, why, evidence, expected effect and cost. `/selfim` lists suggestions for your own CLAUDE.md and skills, which selfim never edits itself. If a change was wrong, correct the agent in a session: the record stops loading from the next session and the next review reverts it.
+
+### Uninstall
+
+Remove the plugin. Hooks stop; the selfim repo stays where it is. Remove the `selfim-*` skill links from `~/.claude/skills/` and from enabled projects' `.claude/skills/` to clean up fully.
+
 ## How it works
 
 ```mermaid
@@ -125,10 +185,6 @@ A record stays `always` only while its impact pays for that cost; otherwise it d
 | `rules.md`, `selfim-*` skills, project index, skill and triggers | your CLAUDE.md, your own skills, your memory folder |
 
 Data lives in one git repo (`~/.selfim` by default): `machines/<host>/`, `areas/<area>/`, `projects/<id>/`. Nothing selfim writes in a project is committed or shows in `git status`, and project data never crosses into other projects.
-
-## Setup
-
-selfim is **off by default**. Install the plugin, then run `/selfim` in a repo to enable it there. The first time, it asks: new runtime repo or clone an existing one · which hook groups to use (core capture, signals, prompted notes, pitfall check) · review by hand or automatically after each session · backfill from past transcripts. After that, `/selfim` in another repo just enables it; `selfim disable` turns it off.
 
 ## Design docs
 
