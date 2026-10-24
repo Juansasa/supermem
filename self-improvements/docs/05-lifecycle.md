@@ -118,6 +118,12 @@ Script-computed from evidence unless marked; they feed periodic reviews and the 
 | projects proven in | project → area promotion |
 | fact volatility (re-checks or probes that found the fact changed) | how long a fact is trusted before re-checking |
 
+**Benchmark** ([11-benchmark.md](11-benchmark.md))
+
+| Metric | Why |
+|---|---|
+| benchmark results vs. original baseline and earlier runs: checks passed, corrections still needed, repeated failures, turns, tokens | a controlled check on the hardest real sessions that selfim makes the agent better, and that token optimizations didn't make it worse |
+
 **Knowledge-base health**
 
 | Metric | Why |

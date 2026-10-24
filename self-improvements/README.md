@@ -67,6 +67,7 @@ Capture itself is silent: hooks log evidence as you work, and a script digests e
 | `/selfim settings` | data location, hook groups, when to learn, spending cap per learning run, backlog threshold. Internal tuning lives in the config file |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
+| `/selfim benchmark` | replay a benchmark built from your hardest real sessions, to measure whether selfim helps (sample or full; cost shown first) |
 | `/selfim show` | what selfim injects here right now, with ids and token sizes |
 | `/selfim drop <id>` / `/selfim pin <id>` | remove a learned record now / keep it as it is |
 | `/selfim uninstall` | clean up links and permission rules before removing the plugin; data stays |
@@ -104,11 +105,12 @@ flowchart LR
   A -. "suggest only" .-> U
 ```
 
-Three rules hold it together:
+Four rules hold it together:
 
 1. **Hooks are cheap.** Scripts only, pointers instead of copies, successes counted rather than logged. The agent is only asked for a note at moments worth recording.
 2. **The LLM only judges.** Scripts digest transcripts and count stats; the review agent decides what to add, patch, promote, demote or revert.
-3. **Git is the decision log.** One change per commit (what, why, evidence, expected effect, expected cost). Undo is a forward commit (restore the previous version, or mark the record `reverted`), never `git revert`; `/selfim drop <id>` does it by hand.
+3. **Real sessions are the test set.** Each review saves the hardest sessions (many corrections, repeated failures) as concise benchmark cases; `/selfim benchmark` replays them to measure whether selfim actually helps.
+4. **Git is the decision log.** One change per commit (what, why, evidence, expected effect, expected cost). Undo is a forward commit (restore the previous version, or mark the record `reverted`), never `git revert`; `/selfim drop <id>` does it by hand.
 
 ## A session, step by step
 

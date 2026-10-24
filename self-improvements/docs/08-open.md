@@ -51,6 +51,9 @@
 | 41 | Generated project ids with aliases; non-git folders refused; per-machine enablement | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
 | 42 | Commands `show`, `drop`, `pin`, `uninstall`, `allow`, `pause` | [07-setup.md](07-setup.md#commands) |
 
+| 43 | Session scorecard fields and collision score formula | [02-capture.md](02-capture.md#session-scorecard) |
+| 44 | Benchmark case format, selection spread across areas, deterministic checks preferred, size cap, `claude plugin eval` as runner | [11-benchmark.md](11-benchmark.md) |
+
 Each area will be defined in more detail during development and testing (the user: "I think we'll have to define each area better during development and testing").
 
 ## Left to the builder

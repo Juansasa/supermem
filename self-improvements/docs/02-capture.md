@@ -82,6 +82,20 @@ The digest runs **automatically**, as a detached background process started at S
 - selfim's own surfacing: what was injected at session start, which `selfim-*` skills loaded, which pitfall warnings/blocks fired and what the agent did next
 - selfim's own cost: sizes of everything injected, note calls, and per-hook timings (for the [whole-solution ledger](05-lifecycle.md#whole-solution-ledger))
 
+### Session scorecard
+
+Each digest ends with a small scorecard, used to pick benchmark cases ([11-benchmark.md](11-benchmark.md)) and for long-term metrics:
+
+| Field | Source |
+|---|---|
+| goal (first prompt, short) and outcome (finished, abandoned, handed over) | UserPromptSubmit flag, end of session |
+| start and end commit | commit range |
+| corrections, denials, interrupts | hooks |
+| repeated failures, retry chains, turns to success | failure and failure→fix records |
+| overturned decisions | decisions that superseded another in this session |
+| turns, tokens, duration, areas | digest |
+| **collision score** | computed by script from the above **(my call, formula tunable)** |
+
 Resumed sessions are digested again from their last offset only; forks are counted from the fork point, so the parent's history isn't counted twice. The LLM reads the digest, never the full transcript. If a needed detail is missing from the payloads, the digest may look it up in the transcript by its stored pointer, tolerating format changes.
 
 ## Processed-data cursors

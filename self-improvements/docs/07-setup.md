@@ -33,6 +33,7 @@ The user: "in any machine there are multiple projects and whatever selfim need t
     log/<session_id>.jsonl       # this project's evidence only
     index.md                     # rendered project index (always loaded)
     triggers.json                # rendered pitfall triggers for the pre-command hook
+    benchmark/<case-id>/         # benchmark cases from this project's sessions (11-benchmark)
     skill/selfim-project/        # rendered project skill (selfim-project-<sub> for subprojects)
   out/rules.md                   # rendered always-loaded rules (machine + universal)
   out/triggers.json              # rendered area pitfall triggers
@@ -125,6 +126,7 @@ The user: "ensure selfim arg have intuitive naming". One entry point; everything
 | `/selfim settings` | change the five user-facing settings ([What `/selfim settings` covers](#what-selfim-settings-covers)) |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; turning off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
+| `/selfim benchmark` | run the benchmark of real hard sessions (sample or full), showing the estimated cost first ([11-benchmark.md](11-benchmark.md)) |
 | `/selfim show` | what selfim injects here right now: rules, index, active triggers, `selfim-*` skills, with ids and token sizes |
 | `/selfim drop <id>` | remove a learned record now (a strong "wrong" signal) |
 | `/selfim pin <id>` | keep a record as it is; it never changes automatically |

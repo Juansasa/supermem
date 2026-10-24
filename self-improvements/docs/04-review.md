@@ -70,6 +70,14 @@ The review agent's judgment is checked by code before anything lands:
 
 Each batch is applied on a temporary branch and lands only if every check passes ([10-robustness.md](10-robustness.md#learning-runs)). `/selfim` lists the changes made since the user last looked.
 
+## Benchmark cases
+
+Each review also looks at the session scorecards ([02-capture.md](02-capture.md#session-scorecard)), picks the highest-collision sessions not yet in the benchmark (spread across areas), and extracts each into a concise case: goal, starting commit, the steps as they happened, checks derived from them, and the original numbers as baseline. Format and running: [11-benchmark.md](11-benchmark.md).
+
+## Offline checks (on request)
+
+There is no automatic offline check before a record goes on trial. The user: "since we have review we do it there when necessary, invoked by user". During review the user can ask to check a candidate, or a cheaper version of a proven record, against the benchmark cases it relates to, with and without it, before accepting it.
+
 ## Suggestions for user-owned files
 
 For the user's own CLAUDE.md, `authoring-*` skills and memory folder, the review only **suggests**, with evidence (e.g. "this `authoring-helm` rule never matched", "this proven `selfim-helm` rule could merge into `authoring-helm`"), based on the read-only excerpts it was given. It never edits them ([06-outputs.md](06-outputs.md#ownership)). Suggestions are shown by `/selfim` and logged; the user's accept/reject is recorded for the [suggestion-acceptance metric](05-lifecycle.md#long-term-metrics).
