@@ -18,7 +18,7 @@ These counters live only in the derived stats database, never in record files.
 
 **Linking interventions to records (my call):** each record declares its area and the intervention kind it targets. Attribution is by **trigger match first** (the record's trigger or subject matched the session's activity), then by (area, kind). Whether a specific intervention was caused by a specific change is a judgment by the review agent, recorded in the revert commit's evidence.
 
-**Sample sizes (my call, tunable):** a before/after comparison needs a minimum number of sessions on each side, using the bootstrap baseline when the user chose to bootstrap; a trial that started because an issue spiked is compared against a longer baseline to avoid crediting a natural drop.
+**Sample sizes (my call, tunable):** a before/after comparison needs a minimum number of sessions on each side, using the baseline from existing history when the user chose to learn from it; a trial that started because an issue spiked is compared against a longer baseline to avoid crediting a natural drop.
 
 ## States
 
@@ -130,7 +130,7 @@ The user asked whether selfim tracks "total token use for the whole selfim solut
 | native baseline | CLAUDE.md, rules and auto memory loaded per session (not selfim's cost; shown for comparison) | InstructionsLoaded hook |
 | skill listing | `selfim-*` descriptions and the plugin's own `selfim` skill description, present every turn | rendered size × turns |
 | skill bodies | `selfim-*` bodies and the `selfim` skill body loaded | skill-load evidence |
-| in-session commands | the turns spent on `/selfim`, `/selfim review` and setup | tool hook payloads |
+| in-session commands | the turns spent on `/selfim` and its subcommands | tool hook payloads |
 | pitfall warnings | lines injected by the pre-command check | PreToolUse hook |
 | note prompts | lines injected asking for a note | UserPromptSubmit / PostToolUse / Stop hooks |
 | note writing | the agent's output for `selfim note` calls | tool hook payloads |

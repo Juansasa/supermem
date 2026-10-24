@@ -11,7 +11,7 @@ selfim/                          # plugin root (replaced on every update; holds 
   .claude-plugin/plugin.json
   hooks/hooks.json               # all hook registrations
   skills/selfim/SKILL.md         # setup, review, note: the user-facing skill
-  bin/selfim                     # CLI on PATH while enabled: note, review, setup, stats
+  bin/selfim                     # CLI on PATH while enabled; backs the /selfim commands, plus `note` for the agent
   lib/                           # Python modules used by hooks and CLI
 ```
 
@@ -65,7 +65,7 @@ Hook constraints that shape the design:
 
 ## Review agent: `claude -p`
 
-Run from the CLI (`selfim review`), with the runtime repo as working directory:
+Started by `/selfim learn` (or automatically, per settings), with the runtime repo as working directory:
 
 - `--output-format json --json-schema <changes schema>`: the agent returns proposed changes; selfim's own code applies, checks and commits them.
 - `--permission-mode dontAsk`, a short read-only `--allowedTools` list (no edit, no network, no arbitrary shell): the agent returns changes as JSON and selfim's code applies them.

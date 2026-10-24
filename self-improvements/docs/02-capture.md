@@ -79,11 +79,11 @@ The user: "keep track of already processed data somehow so it doesnt reconsume s
 | hook records → digest | everything after the last `digested` marker in the same log | same file |
 | digest → review | digest ids consumed by each review run | `reviews/<date>.jsonl` and the evidence commit's trailers |
 | queue | digests not yet consumed by any review: derived, never stored as truth | rebuilt into `.cache/` |
-| git history → bootstrap and later runs | last processed commit per branch; commits are deduplicated by sha, so rebases and merges don't count twice | `projects/<id>/project.json` |
-| past transcripts → bootstrap | session ids already processed; a session with an existing log is never re-read | the logs themselves |
+| git history → learning runs | last processed commit per branch; commits are deduplicated by sha, so rebases and merges don't count twice | `projects/<id>/project.json` |
+| past transcripts → learning from history | session ids already processed; a session with an existing log is never re-read | the logs themselves |
 | native memory and instructions | content hash per file; re-read only when the hash changes | `projects/<id>/project.json` (machine-level files: `machines/<host-id>/config.json`) |
 
-A digest records the version of the digest script that produced it. A newer script version only re-digests on an explicit `selfim migrate`, never silently.
+A digest records the version of the digest script that produced it. A newer script version only re-digests as part of the automatic upgrade step after a plugin update ([07-setup.md](07-setup.md#upgrades)), never silently.
 
 ## Session evidence
 
@@ -111,9 +111,14 @@ Log size per session is tracked as part of selfim's own cost ([05-lifecycle.md](
 
 The digest script and every hook redact secrets (known token patterns, values of env vars whose names look secret, `Authorization:`/password-like fields) before anything is written. Raw transcripts are never copied into the repo, only referenced by path. This follows the user's global rule never to log secret values; the repo is meant to be pushable.
 
-## Bootstrap on first enable
+## Learning from existing history
 
-When `/selfim` enables a project, it **asks the user** whether to bootstrap from existing history or start from nothing, because bootstrapping costs tokens. The user: "skill should prompt user since this costs tokens to backfill or start from nothing. IF project also have git its also useful for gathering already defined code commits and coding decisions".
+There is no separate command for this. `/selfim` **asks the user on its own** whether to learn from existing history or start fresh, because learning costs tokens. It asks when:
+
+- `/selfim` enables a project for the first time, or
+- `/selfim` finds a **large amount of unprocessed data** for the project: many captured sessions not yet learned from (when learning is by hand), past Claude Code sessions from while selfim was off, or many new commits since the last run. Threshold: estimated learning cost above a set amount **(my call, tunable)**.
+
+The session-start hook can't ask questions, so when such a backlog builds up it adds one line: "selfim has unprocessed history here, run /selfim". The user: "skill should prompt user since this costs tokens to backfill or start from nothing. IF project also have git its also useful for gathering already defined code commits and coding decisions".
 
 1. Scripts gather and digest, at zero tokens:
 
@@ -124,10 +129,10 @@ When `/selfim` enables a project, it **asks the user** whether to bootstrap from
    | repo structure (`Chart.yaml`, `Dockerfile`, `.github/workflows`, build files, languages) | tech used and areas, so the project index starts populated |
    | native memory and instructions ([Native sources](#native-sources-read-only)) | what is already known |
 
-2. `/selfim` shows what was found and the estimated cost, e.g. "42 past sessions, 380 commits; areas: helm, gitops, java. Bootstrap review ≈ X tokens / $Y", and asks: **bootstrap** or **start from nothing**.
-3. On bootstrap, one capped review run turns it into records. Findings that already repeat across past sessions can go straight to trial; git-derived coding decisions start as decisions with `source: observed`.
+2. `/selfim` shows what was found and the estimated cost, e.g. "42 past sessions, 380 commits; areas: helm, gitops, java. Learning from this ≈ X tokens / $Y", and asks: **learn from history** or **start fresh** (for a backlog: **learn now** or **later**).
+3. On "learn", one capped review run turns it into records. Findings that already repeat across past sessions can go straight to trial; git-derived coding decisions start as decisions with `source: observed`.
 
-Starting from nothing skips all of this; the baseline then builds up from new sessions.
+"Start fresh" marks the existing history as skipped (recorded in the cursors below), so it isn't offered again; the baseline then builds up from new sessions.
 
 ## Native sources (read-only)
 

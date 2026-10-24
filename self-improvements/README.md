@@ -36,14 +36,14 @@ flowchart TD
   S --> E["repo enabled<br/>(+ subprojects, if any)"]
   F -- "setup already done" --> E
   E --> B{"history found:<br/>past sessions, git commits, repo structure<br/>est. cost X tokens"}
-  B -- bootstrap --> R["one capped review run<br/>seeds records + baseline"]
-  B -- "start from nothing" --> W["work as usual"]
+  B -- "learn from history" --> R["one capped learning run<br/>seeds records + baseline"]
+  B -- "start fresh" --> W["work as usual"]
   R --> W
 ```
 
-Every time a repo is enabled, `/selfim` asks whether to **bootstrap** from its history (past Claude Code sessions, git commits and coding decisions, repo structure, existing memory and CLAUDE.md) or **start from nothing**, and shows the estimated token cost first. Existing CLAUDE.md, rules and auto memory are treated as already known and never injected again.
+When a repo is turned on, and later whenever a lot of unprocessed data has built up, `/selfim` asks whether to **learn from history** (past Claude Code sessions, git commits and coding decisions, repo structure, existing memory and CLAUDE.md) or **start fresh**, showing the estimated token cost first. There's no separate command for it. Existing CLAUDE.md, rules and auto memory are treated as already known and never injected again.
 
-Setup also allows `selfim note` (so notes never trigger a permission prompt) and reads Claude Code's transcript retention. Re-run it any time with `/selfim setup`.
+Setup also allows `selfim note` (so notes never trigger a permission prompt) and reads Claude Code's transcript retention. Change answers any time with `/selfim settings`.
 
 ### Day to day, in an enabled repo
 
@@ -54,7 +54,7 @@ Setup also allows `selfim note` (so notes never trigger a permission prompt) and
 | a one-line warning before a command | a known pitfall matches it; proven pitfalls may block instead |
 | the agent writing a short `selfim note` | right after you correct it, state a decision, or it fixes a failure |
 | `selfim-<area>` and `selfim-project` skills in the skill list | once selfim has distilled knowledge for that area or project |
-| a one-line reminder at session start | reviews are by hand and enough sessions are queued |
+| a one-line reminder at session start | a lot of unprocessed data has built up: run `/selfim` |
 
 Capture itself is silent: hooks log evidence as you work, and a script digests each session when it ends (killed sessions are picked up at the next start).
 
@@ -62,12 +62,12 @@ Capture itself is silent: hooks log evidence as you work, and a script digests e
 
 | Command | Does |
 |---|---|
-| `/selfim` | first run: setup + enable this repo. Later: enable this repo if off, otherwise show status (queue, trials, cost vs. savings, pending suggestions) |
-| `/selfim review` | run the offline review now: turns queued sessions into record changes, one git commit each |
-| `/selfim setup` | change setup answers |
-| `selfim enable --subpath <dir>` | declare a subproject inside this repo |
-| `selfim disable` | stop selfim in this repo; its data stays |
-| `selfim note …` | used by the agent when prompted; fields, not prose |
+| `/selfim` | the main entry. First time: settings + turn on for this repo. Later: turn on here if off, otherwise show status (queue, trials, cost vs. savings, suggestions) and offer to learn when a lot is unprocessed |
+| `/selfim learn` | learn from captured sessions now: record changes, one git commit each |
+| `/selfim settings` | change the setup answers |
+| `/selfim on` / `/selfim off` | turn selfim on or off for this repo; off keeps the data |
+| `/selfim on <dir>` | treat a folder of this repo as its own subproject |
+| `selfim note …` | used by the agent when prompted, not by people |
 
 ### Reviewing what selfim did
 

@@ -11,7 +11,7 @@ Default location: `~/.selfim` **(my call)**. Not the plugin's data folder: that 
 The user: "selfim should be false be default, and enabled by user on first call /selfim".
 
 - The plugin's hooks are registered machine-wide, but **every hook first checks whether the current project is enabled** in `registry.json` and exits immediately if not (no logging, no injection). Until setup has run, hooks do nothing except a one-line hint at session start in a git repo: "selfim is installed; run /selfim to enable it here".
-- `/selfim` in a repo: the first time, it runs setup (below) and enables that project. In any later repo, it only enables that project (`selfim enable`) and asks the bootstrap question, without repeating the rest of setup. `selfim disable` turns a project off again; its data stays. In an already-enabled repo, `/selfim` shows status: queued sessions, records on trial, cost vs. savings, pending suggestions **(my call)**.
+- `/selfim` in a repo: the first time on the machine, it runs setup (below) and turns selfim on for that project. In any later repo, it only turns it on there and offers to learn from existing history, without repeating the rest of setup. `/selfim off` turns a project off again; its data stays. In a repo where selfim is already on, `/selfim` shows status (queued sessions, records on trial, cost vs. savings, pending suggestions) and offers to learn when there's a large backlog **(my call)**.
 - Uninstalling the plugin stops all hooks; the runtime repo stays. Full cleanup means removing the `selfim-*` skill links from `~/.claude/skills/` and enabled projects ([README](../README.md#uninstall)).
 - Enablement lives in `registry.json`, keyed by the project's identity, so all worktrees and clones of an enabled repo are enabled, and nothing is written into the project to switch selfim on.
 - Cost in disabled repos: hook processes still start and exit (a few ms each; the synchronous pre-command hook runs on every tool call). This latency is in the [ledger](05-lifecycle.md#whole-solution-ledger).
@@ -90,15 +90,30 @@ The user: "When user import/invoke this skill it should prompt user about where 
    - **signals:** correction flags, failure→fix pairs.
    - **prompted notes** ([02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable)).
    - **pitfall check** ([06-outputs.md](06-outputs.md#pre-command-pitfall-check)).
-3. **What starts the review step:** by hand (`/selfim review`), with a one-line reminder at session start when the queue passes a threshold; or automatically in the background after a session ends. Suggested default: by hand **(my call)**, since background runs spend tokens unattended. Either way, once a review runs its changes apply automatically, and the zero-token digest always runs automatically.
-4. **Bootstrap or start from nothing:** asked every time a project is enabled, not only at first setup, showing what history was found and the estimated cost ([02-capture.md](02-capture.md#bootstrap-on-first-enable)).
+3. **When selfim learns:** by hand (`/selfim learn`), with a one-line reminder at session start when the queue passes a threshold; or automatically in the background after a session ends. Suggested default: by hand **(my call)**, since background runs spend tokens unattended. Either way, once a review runs its changes apply automatically, and the zero-token digest always runs automatically.
+4. **Learn from existing history or start fresh:** asked whenever a project is turned on (and later when a large backlog builds up), showing what was found and the estimated cost ([02-capture.md](02-capture.md#learning-from-existing-history)).
 
 Setup also:
 - adds a permission rule allowing `Bash(selfim note:*)`, so writing a note never causes a permission prompt (that would be an intervention caused by selfim);
 - reads `cleanupPeriodDays` to set evidence retention;
-- enables the current project and asks whether it contains subprojects (declared as subpaths in `registry.json`; also possible later with `selfim enable --subpath <dir>`).
+- enables the current project and asks whether it contains subprojects (declared as subpaths in `registry.json`; also possible later with `/selfim on <dir>`).
 
-Every answer can be changed later by running `/selfim setup` again.
+Every answer can be changed later with `/selfim settings`.
+
+## Commands
+
+The user: "ensure selfim arg have intuitive naming". One entry point; everything else is a plain verb **(my call)**:
+
+| Command | Does |
+|---|---|
+| `/selfim` | the main entry: turns selfim on here (first time: settings questions), shows status, and offers to learn from history when there's a lot unprocessed |
+| `/selfim learn` | learn from captured sessions now (runs the review) |
+| `/selfim settings` | change the setup answers |
+| `/selfim on` / `/selfim off` | turn selfim on or off for this repo; turning off keeps the data |
+| `/selfim on <dir>` | treat a folder of this repo as its own subproject |
+| `selfim note …` | used by the agent when prompted, not by people |
+
+Upgrades after a plugin update run automatically; there is no user command for them.
 
 ## Second machine
 
@@ -106,7 +121,7 @@ Setup option 1 "clone an existing repo" pulls the shared history. Per-machine da
 
 ## Upgrades
 
-`config.json` and every record carry a `schema_version`. After a plugin update, the first session-start hook runs `selfim migrate` (a script, committed as one migration commit) before anything else.
+`config.json` and every record carry a `schema_version`. After a plugin update, the first session-start hook runs the upgrade script (committed as one migration commit) before anything else.
 
 ## Where the source lives
 

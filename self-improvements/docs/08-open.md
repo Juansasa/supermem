@@ -13,9 +13,10 @@
 | 7 | Prompted-note moments and guards; decisions also detected in user prompts; prompt types measured and turned off when unproductive | [02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable) |
 | 8 | Concision rules and limits (pointers not copies, ~300-byte lines, successes as counts, one-line errors, digest ~1–2k tokens) | [02-capture.md](02-capture.md#keeping-captured-data-concise) |
 | 9 | Secrets redacted before writing; raw transcripts never copied | [02-capture.md](02-capture.md#secrets-my-call) |
-| 10 | Bootstrap sources (transcripts, git history, repo structure, native memory), cost estimate before running, straight-to-trial for findings that already repeat | [02-capture.md](02-capture.md#bootstrap-on-first-enable) |
+| 10 | Learning from existing history: offered automatically on first enable or a large backlog (threshold by estimated cost); sources, cost estimate, straight-to-trial for findings that already repeat | [02-capture.md](02-capture.md#learning-from-existing-history) |
 | 10a | Native memory and instructions read as "already known"; never re-injected | [02-capture.md](02-capture.md#native-sources-read-only) |
 | 10b | Processed-data cursors per stage and source, kept in git; every stage idempotent | [02-capture.md](02-capture.md#processed-data-cursors) |
+| 10c | Command names: `/selfim`, `learn`, `settings`, `on`, `off`, `on <dir>` | [07-setup.md](07-setup.md#commands) |
 | 11 | Remote-system facts carry their explicit target and never leave their project | [03-knowledge.md](03-knowledge.md#scopes) |
 | 12 | Project identity: normalized remote, fallback root path, subprojects declared in `registry.json` | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
 | 13 | Goals/progress only as a short per-session note | [03-knowledge.md](03-knowledge.md#session-note) |
@@ -37,7 +38,7 @@
 | 29 | Repo layout and placement rules; project-skill link excluded via `.git/info/exclude` | [07-setup.md](07-setup.md#data-placement) |
 | 30 | Review started by hand by default | [07-setup.md](07-setup.md#setup-first-selfim) |
 | 31 | Second machine: clone at setup, per-machine folder keyed by hardware id, pull/rebase before review | [07-setup.md](07-setup.md#second-machine) |
-| 32 | Schema version and `selfim migrate` after plugin updates | [07-setup.md](07-setup.md#upgrades) |
+| 32 | Schema version and an automatic upgrade step after plugin updates | [07-setup.md](07-setup.md#upgrades) |
 | 33 | Stack: plugin, Python ≥3.9 stdlib, JSONL + markdown/JSON frontmatter in git, derived SQLite, git CLI with trailers, built-in redaction, shingle-Jaccard dedup | [09-stack.md](09-stack.md) |
 
 ## Left to the builder
