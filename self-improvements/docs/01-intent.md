@@ -49,4 +49,5 @@ Failure means the same issues keep requiring the user's intervention. Worse is "
 - The rule set grows more complicated over time instead of tighter.
 - Knowledge is loaded into sessions where it's irrelevant.
 - selfim's injected tokens creep up without a matching drop in interventions.
+- selfim as a whole (hooks, injected context, notes, review runs) costs more than it saves ([whole-solution ledger](05-lifecycle.md#whole-solution-ledger)).
 - The working session spends noticeable tokens or effort on capture. Allowed exceptions, both capped and measured: the pre-command pitfall check (costs tokens only when a pitfall matches) and prompted notes at moments worth recording ([02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable)).

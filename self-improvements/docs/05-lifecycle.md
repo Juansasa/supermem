@@ -66,3 +66,23 @@ Consequences:
 - **Load level follows value.** A record stays `always` only while its impact justifies paying for it every session; otherwise it drops to `trigger` or `search`. A high-impact `trigger` record can be raised.
 - **No-impact records are demoted** even if they're used: used but not changing outcomes is cost without value.
 - **System trend per project and area:** injected tokens per session, total session tokens, interventions per session. selfim is working when interventions fall without injected tokens creeping up.
+
+## Whole-solution ledger
+
+The user asked whether selfim tracks "total token use for the whole selfim solution as a whole including hooks". Every cost selfim causes is recorded in one ledger, so its overhead can be set against its savings:
+
+| Bucket | What's counted | Source |
+|---|---|---|
+| session-start injection | rule file + project index | SessionStart hook (size known when injected) |
+| skill listing | `selfim-*` descriptions, present every turn | rendered size × turns |
+| skill bodies | `selfim-*` bodies loaded | skill-load evidence |
+| pitfall warnings | lines injected by the pre-command check | PreToolUse hook |
+| note prompts | lines injected asking for a note | UserPromptSubmit / PostToolUse / Stop hooks |
+| note writing | the agent's output for `selfim note` calls | tool hook payloads |
+| review runs | tokens and USD per `claude -p` run | its JSON output (`usage`, `total_cost_usd`), logged per run |
+| hook latency | ms added per turn (p50/p95), per hook | timing written by each hook |
+| **savings** | interventions avoided; tokens and turns no longer spent on repeated failures and re-checks | impact stats above |
+
+- Context repeated on every turn is mostly served from the prompt cache; the ledger counts first-time and cached tokens separately so selfim's cost isn't overstated.
+- Reported per project, per area and overall: **total selfim cost vs. estimated savings**, and the trend over time.
+- **Guard:** if selfim's overhead exceeds its estimated savings over the last N sessions **(my call, N tunable)**, the next review starts by cutting the most expensive buckets (lower load levels, fewer prompt types, trimmed hooks) before adding anything new.

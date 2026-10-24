@@ -54,6 +54,7 @@ Before any LLM reads anything, a script reduces the session's hook records, note
 - git log for the session's commit range
 - token usage for the session (from the usage figures in the transcript)
 - selfim's own surfacing: what was injected at session start, which `selfim-*` skills loaded, which pitfall warnings/blocks fired and what the agent did next
+- selfim's own cost: sizes of everything injected, note calls, and per-hook timings (for the [whole-solution ledger](05-lifecycle.md#whole-solution-ledger))
 
 The LLM reads the digest, never the full transcript. If a needed detail is missing from the payloads, the digest may look it up in the transcript by its stored pointer, tolerating format changes.
 

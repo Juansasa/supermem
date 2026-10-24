@@ -10,7 +10,7 @@ A Claude Code plugin (skill + hooks + CLI) that makes agent sessions improve ove
 - Sessions on the same project never converge on the same facts and workflow.
 - Rules pile up in CLAUDE.md, load everywhere, and nobody knows why they changed or whether they help.
 
-**Success metric:** fewer user interventions (corrections, denials, interrupts, re-explanations). **Secondary:** token cost of what selfim injects.
+**Success metric:** fewer user interventions (corrections, denials, interrupts, re-explanations). **Secondary:** token cost. selfim keeps a ledger of its own total cost (injected context, hooks, notes, review runs) against what it saves.
 
 ## How it works
 

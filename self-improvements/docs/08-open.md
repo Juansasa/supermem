@@ -25,6 +25,7 @@
 | 19 | Hook set and what each records | [02-capture.md](02-capture.md#hooks) |
 | 20 | Prompted-note moments and guards (one per turn, session cap, no Stop prompt twice in a row, skip if note exists); prompt types measured and turned off when unproductive | [02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable) |
 | 21 | Concision rules and limits for hook entries, notes and digests (pointers not copies, ~300-byte lines, successes as counts, one-line errors, digest budget ~1–2k tokens) | [02-capture.md](02-capture.md#keeping-captured-data-concise) |
+| 22 | Whole-solution ledger: cached vs. first-time tokens counted separately; overhead-exceeds-savings guard over N sessions | [05-lifecycle.md](05-lifecycle.md#whole-solution-ledger) |
 
 ## Left to the builder
 

@@ -4,6 +4,8 @@
 
 A separate agent (not the working session) processes queued digests ([02-capture.md](02-capture.md)) together with selfim's existing records. It decides what to add, patch, merge, tighten, promote, demote or revert. Mechanical counts come from scripts ([05-lifecycle.md](05-lifecycle.md#stats)); the agent spends tokens only on judgment.
 
+Each run logs its own tokens and USD to the [whole-solution ledger](05-lifecycle.md#whole-solution-ledger). When the ledger shows selfim costing more than it saves, the run starts by cutting cost before adding anything.
+
 What starts a review (by hand or automatically after a session) is a setup choice ([07-setup.md](07-setup.md#setup-first-invoke)). Once a review runs, its changes apply automatically.
 
 ## When something new is added
