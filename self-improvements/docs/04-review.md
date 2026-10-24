@@ -8,7 +8,7 @@ How a run works ([09-stack.md](09-stack.md#review-agent-claude--p)):
 
 1. `selfim review` (from `/selfim review`, the CLI, or automatically after a session, per setup) starts a **detached** `claude -p` run with the runtime repo as working directory, so it isn't bound by the calling session's tool timeout.
 2. The run sets `SELFIM_REVIEW=1`, so selfim's own hooks don't capture it, and excludes the user's settings, hooks and CLAUDE.md, so the user's interactive rules don't apply to it.
-3. Input, prepared by scripts: the queued digests, the affected records, a precomputed list of similar existing records, current stats, and **read-only excerpts** of the user's own files where a suggestion is being considered. The run never reads outside the runtime repo.
+3. Input, prepared by scripts: the queued digests, the affected records, a precomputed list of similar existing records, current stats, **read-only excerpts** of the user's own files where a suggestion is being considered, and a summary of what native memory and instructions already cover ([02-capture.md](02-capture.md#native-sources-read-only)), so nothing already known is added again. The run never reads outside the runtime repo.
 4. Output: a JSON list of changes. selfim's code applies them, runs the checks below, and commits.
 5. It pulls and rebases first if the repo has a remote, and pushes after.
 

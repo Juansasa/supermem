@@ -32,11 +32,16 @@ Everything selfim learns lives in a separate git repo (default `~/.selfim`), not
 flowchart TD
   I["/plugin install selfim"] --> D["selfim is installed but off.<br/>Sessions in a git repo show one hint:<br/>run /selfim to enable it here"]
   D --> F{"/selfim in a repo"}
-  F -- "first time on this machine" --> S["setup prompts:<br/>1 new runtime repo or clone existing<br/>2 hook groups<br/>3 review by hand or automatic<br/>4 backfill past sessions?"]
+  F -- "first time on this machine" --> S["setup prompts:<br/>1 new runtime repo or clone existing<br/>2 hook groups<br/>3 review by hand or automatic"]
   S --> E["repo enabled<br/>(+ subprojects, if any)"]
   F -- "setup already done" --> E
-  E --> W["work as usual"]
+  E --> B{"history found:<br/>past sessions, git commits, repo structure<br/>est. cost X tokens"}
+  B -- bootstrap --> R["one capped review run<br/>seeds records + baseline"]
+  B -- "start from nothing" --> W["work as usual"]
+  R --> W
 ```
+
+Every time a repo is enabled, `/selfim` asks whether to **bootstrap** from its history (past Claude Code sessions, git commits and coding decisions, repo structure, existing memory and CLAUDE.md) or **start from nothing**, and shows the estimated token cost first. Existing CLAUDE.md, rules and auto memory are treated as already known and never injected again.
 
 Setup also allows `selfim note` (so notes never trigger a permission prompt) and reads Claude Code's transcript retention. Re-run it any time with `/selfim setup`.
 

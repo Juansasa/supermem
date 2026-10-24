@@ -13,7 +13,7 @@ For the overview and diagrams of the workflow, see the [project README](../READM
 | File | Covers |
 |---|---|
 | [01-intent.md](01-intent.md) | why selfim exists, measure of success, goals, constraints, non-goals, anti-goals |
-| [02-capture.md](02-capture.md) | how sessions are captured: hooks, digest, session evidence, secrets, backfill |
+| [02-capture.md](02-capture.md) | how sessions are captured: hooks, digest, session evidence, secrets, bootstrap, native sources |
 | [03-knowledge.md](03-knowledge.md) | what is tracked: scopes, record kinds and fields, project identity, areas |
 | [04-review.md](04-review.md) | the review step: who runs it, when something new is added, commits and reverts, suggestions |
 | [05-lifecycle.md](05-lifecycle.md) | stats, states and transitions, impact vs. token cost |

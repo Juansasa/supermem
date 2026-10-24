@@ -13,7 +13,8 @@
 | 7 | Prompted-note moments and guards; decisions also detected in user prompts; prompt types measured and turned off when unproductive | [02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable) |
 | 8 | Concision rules and limits (pointers not copies, ~300-byte lines, successes as counts, one-line errors, digest ~1–2k tokens) | [02-capture.md](02-capture.md#keeping-captured-data-concise) |
 | 9 | Secrets redacted before writing; raw transcripts never copied | [02-capture.md](02-capture.md#secrets-my-call) |
-| 10 | Optional bounded backfill, default off | [02-capture.md](02-capture.md#backfill-my-call) |
+| 10 | Bootstrap sources (transcripts, git history, repo structure, native memory), cost estimate before running, straight-to-trial for findings that already repeat | [02-capture.md](02-capture.md#bootstrap-on-first-enable) |
+| 10a | Native memory and instructions read as "already known"; never re-injected | [02-capture.md](02-capture.md#native-sources-read-only) |
 | 11 | Remote-system facts carry their explicit target and never leave their project | [03-knowledge.md](03-knowledge.md#scopes) |
 | 12 | Project identity: normalized remote, fallback root path, subprojects declared in `registry.json` | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
 | 13 | Goals/progress only as a short per-session note | [03-knowledge.md](03-knowledge.md#session-note) |

@@ -15,6 +15,7 @@ The user: "make use of claude hooks to add hooks to relevant hooks to helps the 
 | Stop (each turn) | checkpoint: transcript offset captured so far | killed sessions are still captured; no double-processing |
 | SubagentStop | the subagent's transcript path | subagent work lives in separate transcript files |
 | PreCompact | checkpoint, digest and queue | long sessions are captured in pieces |
+| InstructionsLoaded | which native instruction files loaded, and their size | native baseline for the ledger |
 | SessionEnd | end marker, digest and queue | the normal hand-off. The user: "a hook to run it before closing a session or before compaction is optimal" |
 
 **Synchronous vs. async.** Anything that adds text to the agent's context (session-start injection, pitfall warnings, note prompts) must run synchronously, so each hook is split: a fast synchronous part that decides and injects, and an async part that logs. Only the synchronous parts count toward hook latency.
@@ -94,6 +95,32 @@ Log size per session is tracked as part of selfim's own cost ([05-lifecycle.md](
 
 The digest script and every hook redact secrets (known token patterns, values of env vars whose names look secret, `Authorization:`/password-like fields) before anything is written. Raw transcripts are never copied into the repo, only referenced by path. This follows the user's global rule never to log secret values; the repo is meant to be pushable.
 
-## Backfill (my call)
+## Bootstrap on first enable
 
-Setup offers an optional, bounded backfill from existing Claude Code transcripts of the enabled project (e.g. the last N sessions) to give stats a baseline. Default: off.
+When `/selfim` enables a project, it **asks the user** whether to bootstrap from existing history or start from nothing, because bootstrapping costs tokens. The user: "skill should prompt user since this costs tokens to backfill or start from nothing. IF project also have git its also useful for gathering already defined code commits and coding decisions".
+
+1. Scripts gather and digest, at zero tokens:
+
+   | Source | Gives |
+   |---|---|
+   | Claude Code transcripts of this project (every folder and worktree of the repo, within `cleanupPeriodDays`) | past failures, corrections, decisions; a real "before" baseline of interventions per area |
+   | git history, when the project is a git repo: commit messages, reverts and fixups, frequently changed files, commit conventions | coding decisions already made, conventions, active areas, repeated fixes (pitfall hints) |
+   | repo structure (`Chart.yaml`, `Dockerfile`, `.github/workflows`, build files, languages) | tech used and areas, so the project index starts populated |
+   | native memory and instructions ([Native sources](#native-sources-read-only)) | what is already known |
+
+2. `/selfim` shows what was found and the estimated cost, e.g. "42 past sessions, 380 commits; areas: helm, gitops, java. Bootstrap review ≈ X tokens / $Y", and asks: **bootstrap** or **start from nothing**.
+3. On bootstrap, one capped review run turns it into records. Findings that already repeat across past sessions can go straight to trial; git-derived coding decisions start as decisions with `source: observed`.
+
+Starting from nothing skips all of this; the baseline then builds up from new sessions.
+
+## Native sources (read-only)
+
+Claude Code's own memory and instructions are inputs, never outputs (they belong to the user, [06-outputs.md](06-outputs.md#ownership)):
+
+| Native source | Use |
+|---|---|
+| auto memory (`~/.claude/projects/<project>/memory/`) | counted as already known: selfim doesn't re-learn or re-inject it; overlaps become suggestions |
+| `CLAUDE.md`, `AGENTS.md`, `.claude/rules/`, the user's skills | same |
+| `InstructionsLoaded` hook | records which native instructions loaded and their size, so the ledger shows selfim's cost next to the native baseline |
+
+Rule: anything already in native memory or instructions is not injected again by selfim; selfim only tracks whether it works and suggests changes.
