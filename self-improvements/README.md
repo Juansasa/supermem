@@ -166,12 +166,15 @@ stateDiagram-v2
 | State | Loaded? | Judged by |
 |---|---|---|
 | candidate | no | repetition + confidence |
-| trial | yes | **interventions** of its targeted kind |
-| proven | yes | **token cost** (same effect, fewer tokens) |
-| stale / archived | no | reader activity |
-| reverted | no | kept to block re-adding the same change |
+| trial | yes | **recurrence** of its specific issue: no corrections, no repeated failure = success |
+| proven | yes | **token cost** (same effect, fewer tokens); re-checked periodically |
+| stale / archived | no | trigger or subject matches |
+| reverted | no | kept to block re-adding the same change for a while |
+| superseded | no | replaced by a newer decision |
 
-`pinned` records never move. Only reads (loaded, matched, surfaced) keep a record alive; selfim's own edits don't. Nothing is deleted: a revert is a forward commit that changes state.
+`pinned` records never move. Only matches (trigger or subject) keep a record alive; selfim's own edits don't. Nothing is deleted: undo restores the previous version or marks the record `reverted`, as a forward commit.
+
+Learning is automatic, with one exception: records derived from **commit messages or repo files** need your approval in `/selfim` before they load every session, go global, or block.
 
 ## What a session pays
 
