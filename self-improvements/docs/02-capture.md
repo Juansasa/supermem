@@ -1,5 +1,20 @@
 # 02 · Capture: how sessions are tracked
 
+## What selfim records
+
+The user: "We record what is relevant for selfim, raw data of no importance can be ignored. For example selfim is interested in workflow and processes not specifically what input were used".
+
+| Recorded | Not recorded |
+|---|---|
+| command families and tools used, per area | argument values, inline data |
+| outcomes: success, failure kind, one-line error class | tool output, file contents |
+| sequences: what was tried, what fixed it | intermediate output |
+| the user's corrections and decisions (their own words, short) | pasted content, prompts beyond the flagged part |
+| notes the agent writes when prompted (fields) | — |
+| sizes, timings, token usage | — |
+
+Anything not useful for learning how work is done is dropped at capture. This also keeps untrusted text out of learning runs ([10-robustness.md](10-robustness.md#prompt-injection)).
+
 ## Hooks
 
 The user: "make use of claude hooks to add hooks to relevant hooks to helps the skills capture relevant facts, logs and progress even when skills isnt in play". Capture runs through hooks; it doesn't depend on the selfim skill being loaded. All hooks are scripts (no LLM), and all of them exit immediately in projects where selfim isn't enabled ([07-setup.md](07-setup.md#activation-off-by-default)).
@@ -30,9 +45,9 @@ The user: "make use of claude hooks to add hooks to relevant hooks to helps the 
 
 ### Killed sessions and the catch-up sweep
 
-A session can be killed at any time; nothing special is needed for that. Hooks write evidence as each event happens, so a kill loses at most the event in flight, and token usage is read later from Claude Code's transcript, which survives the kill. A resumed session (same `session_id`) keeps appending to the same log.
+A session can be killed at any time; nothing special is needed for that. Hooks write evidence as each event happens (to a spool, [10-robustness.md](10-robustness.md#capture-health)), so a kill loses at most the event in flight, and token usage is read later from Claude Code's transcript, which survives the kill. A resumed session (same `session_id`) keeps appending to the same log.
 
-What a kill skips is the end marker and the queueing. So every SessionStart runs a **catch-up sweep**: logs with checkpoints but no end marker that aren't queued get digested and queued. Script only, no tokens. The queue can always be rebuilt from the logs and `reviews/*.jsonl`, so deleting `.cache/` loses nothing.
+What a kill skips is the end marker and the queueing. So every SessionStart runs a **catch-up sweep**: logs with checkpoints but no end marker, whose session is no longer alive (liveness heartbeat), get digested and queued in the background. Script only, no tokens. The queue can always be rebuilt from the logs and `reviews/*.jsonl`, so deleting `.cache/` loses nothing.
 
 ## Prompted notes (high precision, when applicable)
 
@@ -55,7 +70,7 @@ Notes are session evidence with `source: noted` (higher precision than extracted
 
 ## Digest (script, zero tokens)
 
-The digest runs **automatically** at SessionEnd, PreCompact and in the catch-up sweep, whatever the review setting, so a session never depends on its transcript surviving until review. It reduces the session's hook records, notes and (for token usage) the transcript to a compact digest of the moments that matter:
+The digest runs **automatically**, as a detached background process started at SessionEnd, PreCompact and by the catch-up sweep, whatever the review setting, so a session never depends on its transcript surviving until review. It reduces the session's hook records, notes and (for token usage) the transcript to a compact digest of the moments that matter:
 
 - failed commands and errors (with the command that fixed them, if any)
 - user interventions: corrections, tool-call denials, interrupts, repeated explanations
@@ -130,7 +145,7 @@ The session-start hook can't ask questions, so when such a backlog builds up it 
    | native memory and instructions ([Native sources](#native-sources-read-only)) | what is already known |
 
 2. `/selfim` shows what was found and the estimated cost, e.g. "42 past sessions, 380 commits; areas: helm, gitops, java. Learning from this ≈ X tokens / $Y", and asks: **learn from history** or **start fresh** (for a backlog: **learn now** or **later**).
-3. Choosing "learn" is the same as running `/selfim learn`: one action that processes **all** unprocessed data, existing history and captured sessions alike. One capped review run turns it into records. Findings that already repeat across past sessions can go straight to trial; git-derived coding decisions start as decisions with `source: observed`.
+3. Choosing "learn" is the same as running `/selfim learn`: one action that processes **all** unprocessed data, existing history and captured sessions alike, in batches under the spending cap ([10-robustness.md](10-robustness.md#learning-runs)). Findings that already repeat across past sessions can go straight to trial at `trigger` level. Records derived from commit messages or repo files start as candidates and need the user's approval before they load every session, go global or block ([04-review.md](04-review.md#approval-gate)).
 
 "Start fresh" marks the existing history as skipped (recorded in the cursors below), so it isn't offered again; the baseline then builds up from new sessions.
 

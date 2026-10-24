@@ -31,11 +31,13 @@ Knowledge records are curated by the review agent ([04-review.md](04-review.md))
 | state | lifecycle state ([05-lifecycle.md](05-lifecycle.md#states)) |
 | source | observed · user · inferred (trust) |
 | load level | always · trigger · search ([06-outputs.md](06-outputs.md#load-levels)) |
-| targets | the intervention kind it should reduce |
+| targets | the specific issue it should stop (a failure, a correction, a re-ask, a re-probe) |
 | state history | via git; counters (helpful/harmful, matches, use) live only in the derived stats database ([05-lifecycle.md](05-lifecycle.md#stats)) |
 | provenance | sessions and projects it came from |
 
-Facts carry a **last verified** date: stable facts are trusted without re-probing; past a limit they are marked stale and queued for one cheap re-check. Decisions carry **revisit when**: they resurface only when that condition matches.
+Facts carry a **last verified** date and optional **watched paths or commit patterns**: stable facts are trusted without re-probing; past the limit, or when a watched path changes, they are flagged **unverified** (still loaded, marked "verify before relying on it") and queued for a re-check. A probe whose result contradicts a fact excludes it at once ([05-lifecycle.md](05-lifecycle.md#transitions)). Decisions carry **revisit when**, written as something a script can match (path, command, version) where possible; otherwise the review checks it each run. A newer decision on the same question **supersedes** the old one.
+
+Area records may carry an **applies when** condition (e.g. a file layout), and a project can hold an **exception** record saying an area record doesn't apply there.
 
 ## Areas
 
@@ -43,7 +45,7 @@ Areas are inferred mechanically from commands and paths (`helm`/`charts/**` → 
 
 ## Project identity (my call)
 
-A project is keyed by its git remote URL (falling back to the repo root path). Remotes are normalized (`host/owner/repo`, ssh and https alike, no `.git`). Subprojects inside one repo (e.g. `supermem/self-improvements/`) are declared as subpaths in the selfim repo's `registry.json` (at setup or with `/selfim on <dir>`); each subproject gets its own index and project skill, and a session counts as the subproject when its working directory is inside that subpath. No marker files are written into project repos ([07-setup.md](07-setup.md#data-placement)). Worktrees and clones map to the same project.
+A project gets a **generated id**. Its `project.json` lists the identities seen for it: normalized remotes of `origin` (`host/owner/repo`, ssh and https alike, no `.git`), root paths, and the repo's first-commit sha. When a lookup misses (remote renamed, no remote, moved folder), selfim matches by first commit or path and asks once ("looks like <old>, same project?"), then records the alias. Forks share a first commit, so that match always asks and never merges automatically. Folders that aren't git repos are not supported: `/selfim` refuses there. Subprojects inside one repo (e.g. `supermem/self-improvements/`) are declared as subpaths in the selfim repo's `registry.json` (at setup or with `/selfim on <dir>`); each subproject gets its own index and project skill (`selfim-project-<sub>`); a subproject session loads the repo index plus the subproject index within the same size limit; existing repo-level records stay where they are unless the review moves them with path evidence; turning the repo off turns its subprojects off; and a session counts as the subproject when its working directory is inside that subpath. No marker files are written into project repos ([07-setup.md](07-setup.md#data-placement)). Worktrees and clones map to the same project.
 
 ## Session note
 

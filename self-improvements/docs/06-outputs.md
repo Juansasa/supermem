@@ -29,8 +29,9 @@ Each record's load level decides where it appears and what it costs:
 | search | not loaded; read on demand from the repo | not loaded; listed by id in `index.md` | per lookup |
 
 - **Why a hook, not CLAUDE.md:** the user considered referencing selfim from the project's CLAUDE.md or a `.claude/rules/selfim.md` file and chose the hook ("hook is better"). Hook injection loads only in enabled projects, is measured exactly, and writes nothing into the project. The injected block starts with a one-line header naming its source and size (`selfim · <project> · N items · ~X tokens`) so its origin is visible in the session **(my call)**.
-- **Starting level** for a record that goes on trial **(my call)**: rules, facts and decisions start at `always` while the always-loaded budget allows (otherwise `trigger`); pitfalls start at `trigger`. After that, the level follows value ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
+- **Starting level** for a record that goes on trial **(my call)**: rules, facts and decisions from the user's own sessions start at `always` while the budget allows (otherwise `trigger`); pitfalls and anything learned from history start at `trigger`. After that, `always` slots are re-ranked by value per character at every render ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
 - A session pays only skill descriptions until a body loads. A helm session never pays for gitops rules.
+- The first time a session touches an area that has a `selfim-<area>` skill, the pre-command hook adds a one-line hint ("selfim-helm covers this"), so broad skills actually get used.
 - The project index is one line per item, for the current project only.
 - Hard limit: `rules.md` + `index.md` together stay under 10,000 characters, Claude Code's cap on context injected at session start.
 
@@ -39,6 +40,6 @@ Each record's load level decides where it appears and what it costs:
 A hook in the **pitfall check** group ([07-setup.md](07-setup.md#setup-first-selfim)) matches each tool call against the triggers in `out/triggers.json` and the current project's `triggers.json` (command regex, path glob, tool, area) with a script, no LLM.
 
 - **Warn** (default): the call is allowed, and one line naming the pitfall and what works instead is added to the agent's context.
-- **Block:** the call is denied with that line as the reason. Only pitfalls that have proven themselves with high warning precision can be raised to block **(my call; the user hasn't chosen)**.
+- **Block:** the call is denied with that line as the reason and a one-shot override (`selfim allow <id>`). Only pitfalls that have proven themselves with high warning precision can be raised to block, and blocks from history need the user's approval **(my call; the user hasn't chosen)**. Trigger safety, precision measurement and overrides: [10-robustness.md](10-robustness.md#pitfall-safety).
 
 Each warning or block is logged as surfacing evidence, along with what the agent did next.

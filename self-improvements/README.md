@@ -10,7 +10,7 @@ A Claude Code plugin (skill + hooks + CLI) that makes agent sessions improve ove
 - Sessions on the same project never converge on the same facts and workflow.
 - Rules pile up in CLAUDE.md, load everywhere, and nobody knows why they changed or whether they help.
 
-**Success metric:** fewer user interventions (corrections, denials, interrupts, re-explanations). **Secondary:** token cost. selfim keeps a ledger of its own total cost (injected context, hooks, notes, review runs) against what it saves.
+**Success metric:** issues stop recurring and you stop correcting the agent. selfim records workflow and process, not raw inputs. **Secondary:** token cost. selfim keeps a ledger of its own total cost (injected context, hooks, notes, review runs) against what it saves.
 
 ## Using selfim
 
@@ -30,7 +30,7 @@ Everything selfim learns lives in a separate git repo (default `~/.selfim`), not
 
 ```mermaid
 flowchart TD
-  I["/plugin install selfim"] --> D["selfim is installed but off.<br/>Sessions in a git repo show one hint:<br/>run /selfim to enable it here"]
+  I["/plugin install selfim"] --> D["selfim is installed but off.<br/>Sessions in a git repo show one hint:<br/>run /selfim to turn it on here"]
   D --> F{"/selfim in a repo"}
   F -- "first time on this machine" --> S["setup prompts:<br/>1 new runtime repo or clone existing<br/>2 hook groups<br/>3 review by hand or automatic"]
   S --> E["repo enabled<br/>(+ subprojects, if any)"]
@@ -67,7 +67,11 @@ Capture itself is silent: hooks log evidence as you work, and a script digests e
 | `/selfim settings` | data location, hook groups, when to learn, spending cap per learning run, backlog threshold. Internal tuning lives in the config file |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
+| `/selfim show` | what selfim injects here right now, with ids and token sizes |
+| `/selfim drop <id>` / `/selfim pin <id>` | remove a learned record now / keep it as it is |
+| `/selfim uninstall` | clean up links and permission rules before removing the plugin; data stays |
 | `selfim note …` | used by the agent when prompted, not by people |
+| `selfim allow <id>` / `selfim pause` | let one blocked command through / pitfall check off for this session |
 
 ### Reviewing what selfim did
 
@@ -104,7 +108,7 @@ Three rules hold it together:
 
 1. **Hooks are cheap.** Scripts only, pointers instead of copies, successes counted rather than logged. The agent is only asked for a note at moments worth recording.
 2. **The LLM only judges.** Scripts digest transcripts and count stats; the review agent decides what to add, patch, promote, demote or revert.
-3. **Git is the decision log.** One change per commit (what, why, evidence, expected effect, expected cost). Undo is `git revert`.
+3. **Git is the decision log.** One change per commit (what, why, evidence, expected effect, expected cost). Undo is a forward commit (restore the previous version, or mark the record `reverted`), never `git revert`; `/selfim drop <id>` does it by hand.
 
 ## A session, step by step
 
@@ -146,14 +150,15 @@ stateDiagram-v2
   direction LR
   [*] --> candidate: finding
   candidate --> trial: repeated 2+ and high confidence
-  trial --> proven: targeted interventions drop
-  trial --> reverted: user contradicts it, or no effect
-  proven --> reverted: user contradicts it
-  proven --> proven: optimize for tokens (re-trialled)
-  trial --> stale: not loaded for N sessions
-  proven --> stale: not loaded for N sessions
-  stale --> trial: used again (back to previous state)
+  trial --> proven: issue stops recurring (no corrections)
+  trial --> reverted: issue recurs, or user contradicts it
+  proven --> trial: issue is back
+  proven --> proven: cheaper version (restored if issue returns)
+  trial --> stale: no match for N sessions
+  proven --> stale: no match for N sessions
+  stale --> proven: matched again (previous state)
   stale --> archived: idle longer
+  proven --> superseded: newer decision
 ```
 
 | State | Loaded? | Judged by |

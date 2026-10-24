@@ -41,6 +41,18 @@
 | 32 | Schema version and an automatic upgrade step after plugin updates | [07-setup.md](07-setup.md#upgrades) |
 | 33 | Stack: plugin, Python ≥3.9 stdlib, JSONL + markdown/JSON frontmatter in git, derived SQLite, git CLI with trailers, built-in redaction, shingle-Jaccard dedup | [09-stack.md](09-stack.md) |
 
+| 34 | Recurrence-based trials (no corrections = proven), measure per record kind, trial max length, restart only on model-family change | [05-lifecycle.md](05-lifecycle.md#stats) |
+| 35 | Record versions; undo restores the previous version; `superseded` state; expiring revert blocks; project exceptions to area rules | [05-lifecycle.md](05-lifecycle.md#transitions) |
+| 36 | Harmful only on a hard link; weaker overlaps "suspected" | [05-lifecycle.md](05-lifecycle.md#stats) |
+| 37 | Content-free capture (workflow and process, not inputs) | [02-capture.md](02-capture.md#what-selfim-records) |
+| 38 | Narrow approval gate for commit- and repo-derived records (the user: "narrow for now") | [04-review.md](04-review.md#approval-gate) |
+| 39 | Apply code validates the review agent's evidence and derives `source` | [04-review.md](04-review.md#checks-on-the-review-agents-output) |
+| 40 | Robustness contract: fail-open hooks, spool, liveness, lock, batched transactional learning, capture health, secrets scan/purge, merge rules, hand edits | [10-robustness.md](10-robustness.md) |
+| 41 | Generated project ids with aliases; non-git folders refused; per-machine enablement | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
+| 42 | Commands `show`, `drop`, `pin`, `uninstall`, `allow`, `pause` | [07-setup.md](07-setup.md#commands) |
+
+Each area will be defined in more detail during development and testing (the user: "I think we'll have to define each area better during development and testing").
+
 ## Left to the builder
 
 - Exact threshold values, sample sizes and size budgets.

@@ -19,7 +19,7 @@ In the user's words: good means "producing desired result with least amount of i
 
 Failure means the same issues keep requiring the user's intervention. Worse is "more of the same issues in nature that requires more intervention".
 
-**User interventions are the primary metric** (corrections, rejected tool calls, interrupts, re-explanations of settled things). **Token cost** is the second: it decides how proven knowledge is optimized ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
+**User interventions are the primary metric** (corrections, rejected tool calls, interrupts, re-explanations of settled things), measured per record as whether its specific issue stops recurring. The user: "no correction is also one of the best metrics, after long usage with very little correction what remains is the token usage". **Token cost** is the second: it decides how proven knowledge is optimized ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
 
 ## Goals
 

@@ -10,10 +10,10 @@ Default location: `~/.selfim` **(my call)**. Not the plugin's data folder: that 
 
 The user: "selfim should be false be default, and enabled by user on first call /selfim".
 
-- The plugin's hooks are registered machine-wide, but **every hook first checks whether the current project is enabled** in `registry.json` and exits immediately if not (no logging, no injection). Until setup has run, hooks do nothing except a one-line hint at session start in a git repo: "selfim is installed; run /selfim to enable it here".
+- The plugin's hooks are registered machine-wide, but **every hook first checks whether the current project is enabled on this machine** and exits immediately if not (no logging, no injection). Until setup has run, hooks do nothing except a one-line hint shown to the user (not the agent), once per git repo: "selfim is installed; run /selfim to turn it on here".
 - `/selfim` in a repo: the first time on the machine, it runs setup (below) and turns selfim on for that project. In any later repo, it only turns it on there and offers to learn from existing history, without repeating the rest of setup. `/selfim off` turns a project off again; its data stays. In a repo where selfim is already on, `/selfim` shows status (queued sessions, records on trial, cost vs. savings, pending suggestions) and offers to learn when there's a large backlog **(my call)**.
 - Uninstalling the plugin stops all hooks; the runtime repo stays. Full cleanup means removing the `selfim-*` skill links from `~/.claude/skills/` and enabled projects ([README](../README.md#uninstall)).
-- Enablement lives in `registry.json`, keyed by the project's identity, so all worktrees and clones of an enabled repo are enabled, and nothing is written into the project to switch selfim on.
+- Enablement is per machine (`machines/<host-id>/config.json`), keyed by the project's identity from `registry.json`, so all worktrees and clones of an enabled repo on this machine are enabled, turning a repo off on one machine doesn't affect another, and nothing is written into the project to switch selfim on. `/selfim off` also ends live sessions' logs cleanly and removes the project-skill links. Non-git folders are not supported.
 - Cost in disabled repos: hook processes still start and exit (a few ms each; the synchronous pre-command hook runs on every tool call). This latency is in the [ledger](05-lifecycle.md#whole-solution-ledger).
 
 ## Data placement
@@ -22,9 +22,9 @@ The user: "in any machine there are multiple projects and whatever selfim need t
 
 ```
 <selfim-repo>/
-  registry.json                  # project id ← normalized remotes / paths / subpaths; enabled flag
+  registry.json                  # project ids and their aliases (remotes, paths, first commit, subpaths)
   machines/<host-id>/
-    config.json                  # this machine's setup answers and local paths
+    config.json                  # this machine's settings, local paths, enabled projects
     records/                     # machine-scope facts
   areas/<area>/records/          # area know-how (helm, gitops, …), cross-project
   projects/<id>/
@@ -33,12 +33,12 @@ The user: "in any machine there are multiple projects and whatever selfim need t
     log/<session_id>.jsonl       # this project's evidence only
     index.md                     # rendered project index (always loaded)
     triggers.json                # rendered pitfall triggers for the pre-command hook
-    skill/selfim-project/        # rendered project skill
+    skill/selfim-project/        # rendered project skill (selfim-project-<sub> for subprojects)
   out/rules.md                   # rendered always-loaded rules (machine + universal)
   out/triggers.json              # rendered area pitfall triggers
   out/skills/selfim-<area>/      # rendered global area skills
   reviews/<date>.jsonl           # review-run log (cost, changes)
-  .cache/                        # queue, derived SQLite, stats (gitignored)
+  .cache/                        # spool, liveness, lock, queue, derived SQLite, stats (gitignored)
 ```
 
 Rules:
@@ -94,7 +94,7 @@ The user: "When user import/invoke this skill it should prompt user about where 
 4. **Learn from existing history or start fresh:** asked whenever a project is turned on (and later when a large backlog builds up), showing what was found and the estimated cost ([02-capture.md](02-capture.md#learning-from-existing-history)).
 
 Setup also:
-- adds a permission rule allowing `Bash(selfim note:*)`, so writing a note never causes a permission prompt (that would be an intervention caused by selfim);
+- adds permission rules allowing `selfim note` and `selfim allow` to `~/.claude/settings.json` (user settings, never the project's), so selfim never causes a permission prompt;
 - reads `cleanupPeriodDays` to set evidence retention;
 - enables the current project and asks whether it contains subprojects (declared as subpaths in `registry.json`; also possible later with `/selfim on <dir>`).
 
@@ -109,8 +109,8 @@ User-facing choices only **(my call)**:
 | data location | the selfim repo: new, or a clone of an existing one | `~/.selfim` |
 | hook groups | signals, prompted notes, pitfall check (core capture is always on in enabled repos) | all on |
 | when to learn | by hand (`/selfim learn` + reminder), or automatically after each session | by hand |
-| spending cap per learning run | max tokens / USD one `/selfim learn` may spend | set at setup |
-| backlog threshold | how much unprocessed data (estimated learning cost) builds up before `/selfim` offers to learn | set at setup |
+| spending cap per learning run | max tokens / USD one learning run may spend (also a daily cap for automatic learning) | default value, shown at setup |
+| backlog threshold | how much unprocessed data (estimated learning cost) builds up before `/selfim` offers to learn | default value, shown at setup |
 
 All other tunable values (size limits, trial and stale windows, note-prompt caps, retention, cost-guard window, similarity thresholds) live in `machines/<host-id>/config.json` with defaults, for anyone who wants to tune them; `/selfim settings` doesn't ask about them.
 
@@ -125,7 +125,12 @@ The user: "ensure selfim arg have intuitive naming". One entry point; everything
 | `/selfim settings` | change the five user-facing settings ([What `/selfim settings` covers](#what-selfim-settings-covers)) |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; turning off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
+| `/selfim show` | what selfim injects here right now: rules, index, active triggers, `selfim-*` skills, with ids and token sizes |
+| `/selfim drop <id>` | remove a learned record now (a strong "wrong" signal) |
+| `/selfim pin <id>` | keep a record as it is; it never changes automatically |
+| `/selfim uninstall` | remove links, exclude lines and permission rules before removing the plugin; data stays |
 | `selfim note …` | used by the agent when prompted, not by people |
+| `selfim allow <id>` / `selfim pause` | one-shot override of a blocking pitfall / pitfall check off for this session ([10-robustness.md](10-robustness.md#pitfall-safety)) |
 
 Upgrades after a plugin update run automatically; there is no user command for them.
 
