@@ -6,9 +6,25 @@ A Claude Code plugin (skill + hooks + CLI) that makes agent sessions improve ove
 
 ## The problem
 
-- Agents repeat failed commands, re-check confirmed things, re-probe systems that don't change.
-- Sessions on the same project never converge on the same facts and workflow.
-- Rules pile up in CLAUDE.md, load everywhere, and nobody knows why they changed or whether they help.
+Agent sessions keep relearning the same things, and the rules meant to prevent that don't scale. Each problem below is one selfim addresses:
+
+| Problem | How selfim addresses it |
+|---|---|
+| **Same mistake twice:** the agent retries commands that already failed | failures and their fixes become **pitfalls**; a pre-command check warns (or blocks) before a known-bad command runs |
+| **Re-checking what you confirmed:** settled questions get asked again | your decisions are recorded with their reason; confirmed ones count as settled and are measured by "re-asks" |
+| **Re-probing systems that never change** (cluster layout, installed tools, OS) | **facts** with a target, a stability and a last-verified date; trusted until stale or contradicted |
+| **Wrong-target actions:** a command hits the wrong cluster, host or namespace | remote-system facts always carry their target, and never leak to another project |
+| **Sessions don't converge:** parallel sessions on one project each work out their own facts and workflow | one shared knowledge base per project, fed by every session, loaded at session start |
+| **Findings die with the session:** compaction or a killed session loses what was learned | hooks capture as work happens; checkpoints and a catch-up sweep pick up killed sessions |
+| **Lost "why":** nobody remembers why a rule changed | every change is a git commit with what, why, evidence and expected effect |
+| **No idea if a rule helps** | each record is on trial until its specific issue stops recurring and you stop correcting it; otherwise it's reverted |
+| **Rules pile up and get more complicated** | size caps, merges, demotion of unused or no-impact records, archive |
+| **Irrelevant rules everywhere:** gitops rules loaded in a helm session | three load levels (always, on trigger, on lookup), one skill per area, path- and command-triggered loading |
+| **CLAUDE.md eats context in every session** | only what earns its place is loaded every session; proven records are optimized for fewer tokens |
+| **Know-how never becomes a skill** | recurring workflows and fixes are distilled into `selfim-<area>` and `selfim-project` skills |
+| **Past work is wasted:** existing sessions and git history teach nothing | on first use, selfim offers to learn from past sessions, commit history and coding decisions |
+| **Self-improvement has hidden costs** | a ledger of selfim's own tokens (injection, hooks, notes, learning runs) against what it saves |
+| **No proof it works on hard tasks** | the hardest real sessions become a benchmark you can replay |
 
 **Success metric:** issues stop recurring and you stop correcting the agent. selfim records workflow and process, not raw inputs. **Secondary:** token cost. selfim keeps a ledger of its own total cost (injected context, hooks, notes, review runs) against what it saves.
 
