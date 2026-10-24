@@ -4,34 +4,40 @@
 
 | Output | Who changes it | How |
 |---|---|---|
-| `selfim` rule file (machine facts + a few universal rules) | selfim, automatically | git commits, revertible |
-| `selfim-*` skills, one per area (`selfim-helm`, `selfim-gitops`, …) | selfim, automatically | git commits, revertible |
-| project knowledge (per project folder in the repo) | selfim, automatically | git commits, revertible |
+| `out/rules.md` (machine facts + a few universal rules) | selfim, automatically | git commits, revertible |
+| global skills `selfim-<area>` (`selfim-helm`, `selfim-gitops`, …) | selfim, automatically | git commits, revertible |
+| project knowledge: `index.md`, `selfim-project` skill, `triggers.json` | selfim, automatically | git commits, revertible |
 | user's CLAUDE.md, `authoring-*` skills, memory folder | user only | selfim **suggests** with evidence; never edits ([04-review.md](04-review.md#suggestions-for-user-owned-files)) **(my call: the user confirmed automatic changes for selfim's own files; this boundary for user-owned files was proposed and not contradicted)** |
 
-The user's direction: "Best if it can produce it's own rule file, track it's own skills selfim-* with clear decison logs like git".
+The user's direction: "Best if it can produce it's own rule file, track it's own skills selfim-* with clear decison logs like git". Where each output is linked or injected: [07-setup.md](07-setup.md#skill-layers).
 
 ## Output shape
 
-- **Few, broad skills:** one `selfim-<area>` skill per area, with reference files beneath it, rather than many small skills. The skill listing truncates descriptions, so a large library becomes invisible (observed in UniM0cha/self-improving-skills: 385 skills, 13 visible).
-- **Generated from records:** `rules.md`, `selfim-*` skills and project indexes are rendered from the records ([03-knowledge.md](03-knowledge.md)). Edits are itemized, never wholesale rewrites (repeated summarising erodes content).
-- **Size caps (my call):** the rule file and each `selfim-*` skill have a size budget. Adding past it forces a merge, tighter wording, or a demotion. This is what stops rules from creeping in complexity.
+- **Few, broad skills:** one global `selfim-<area>` skill per area and one `selfim-project` skill per project, each with reference files beneath it, rather than many small skills. The skill listing truncates descriptions (1,536 characters per skill), so a large library becomes invisible (observed in UniM0cha/self-improving-skills: 385 skills, 13 visible).
+- **Global skills hold area-scope records only.** Project records never go into a global skill; they render into the project's index, `selfim-project` skill and `triggers.json`.
+- **Generated from records:** all outputs are rendered from the records ([03-knowledge.md](03-knowledge.md)). Edits are itemized, never wholesale rewrites (repeated summarising erodes content).
+- **Size caps (my call):** the rule file, each index and each skill have a size budget. Adding past it forces a merge, tighter wording, or a demotion. This is what stops rules from creeping in complexity.
 
 ## Load levels
 
 Each record's load level decides where it appears and what it costs:
 
-| Load level | Where it loads | Cost paid |
-|---|---|---|
-| always | the rule file and the current project's index, injected at session start by a hook (CLAUDE.md stays untouched) **(my call)** | every session |
-| trigger | the body of its `selfim-<area>` skill, loaded when the area comes up; or a pitfall warning from the pre-command check | per match |
-| search | not loaded; read on demand from the repo (the index points to it) | per lookup |
+| Load level | Area or machine record | Project record | Cost paid |
+|---|---|---|---|
+| always | `out/rules.md`, injected at session start | `index.md`, injected at session start | every session |
+| trigger | body of its `selfim-<area>` skill; pitfalls in `out/triggers.json` | body of `selfim-project`; pitfalls in the project's `triggers.json` | per load or match |
+| search | not loaded; read on demand from the repo | not loaded; listed by id in `index.md` | per lookup |
 
-- `selfim-*` are ordinary Claude Code skills. A session pays only their one-line descriptions until the body loads. A helm session never pays for gitops rules.
+- **Starting level** for a record that goes on trial **(my call)**: rules, facts and decisions start at `always` while the always-loaded budget allows (otherwise `trigger`); pitfalls start at `trigger`. After that, the level follows value ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
+- A session pays only skill descriptions until a body loads. A helm session never pays for gitops rules.
 - The project index is one line per item, for the current project only.
-- Hard limit: rule file + project index together stay under 10,000 characters, Claude Code's cap on context injected at session start.
-- Which level a record gets is driven by its value ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
+- Hard limit: `rules.md` + `index.md` together stay under 10,000 characters, Claude Code's cap on context injected at session start.
 
 ## Pre-command pitfall check
 
-An optional hook ([07-setup.md](07-setup.md#setup-first-invoke)) matches each tool call against pitfall triggers (command regex, path glob, tool, area) with a script, no LLM. A match **warns** by default (one injected line naming the pitfall and what works instead); a pitfall that has proven itself can be raised to **block** **(my call; the user hasn't chosen)**. Each warning or block is logged as surfacing evidence.
+A hook in the **pitfall check** group ([07-setup.md](07-setup.md#setup-first-selfim)) matches each tool call against the triggers in `out/triggers.json` and the current project's `triggers.json` (command regex, path glob, tool, area) with a script, no LLM.
+
+- **Warn** (default): the call is allowed, and one line naming the pitfall and what works instead is added to the agent's context.
+- **Block:** the call is denied with that line as the reason. Only pitfalls that have proven themselves with high warning precision can be raised to block **(my call; the user hasn't chosen)**.
+
+Each warning or block is logged as surfacing evidence, along with what the agent did next.

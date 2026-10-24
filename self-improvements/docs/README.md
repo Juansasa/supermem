@@ -2,7 +2,7 @@
 
 Status: draft for approval · 2026-10-24
 
-`selfim` is a skill for continuous self-improvement. It captures what happens in agent sessions, distills it into facts, rules and area skills, measures whether they reduce the user's interventions at an acceptable token cost, and promotes, demotes or reverts them. Every change is a git commit with what, why and evidence.
+`selfim` is a Claude Code plugin (skill + hooks + CLI) for continuous self-improvement. It captures what happens in agent sessions, distills it into facts, rules and area skills, measures whether they reduce the user's interventions at an acceptable token cost, and promotes, demotes or reverts them. Every change is a git commit with what, why and evidence.
 
 Statements attributed to the user are theirs. Everything marked **(my call)** was chosen by Claude during design and is open to correction; all of them are collected in [08-open.md](08-open.md).
 

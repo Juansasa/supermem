@@ -51,17 +51,18 @@ sequenceDiagram
   participant Hooks
   participant Log as selfim log
 
-  Hooks->>Agent: SessionStart: inject rules.md + project index
+  Hooks->>Log: SessionStart: project enabled? else exit. Sweep killed sessions
+  Hooks->>Agent: inject rules.md + project index
   User->>Agent: prompt
   Hooks->>Log: correction? flag it (+ ask agent for a note)
   Agent->>Hooks: tool call
   Hooks-->>Agent: PreToolUse: known pitfall? warn / block
-  Hooks->>Log: PostToolUse: failure, or failure→fix pair
+  Hooks->>Log: failure / denial, or failure→fix pair
   Agent->>Hooks: end of turn
   Hooks->>Log: Stop: checkpoint offset
   Hooks-->>Agent: decision made? ask for a note
   Agent->>Log: selfim note (fields, ≤400 chars)
-  Hooks->>Log: PreCompact / SessionEnd: queue for review
+  Hooks->>Log: PreCompact / SessionEnd: digest (script) + queue for review
 ```
 
 ## What gets tracked
@@ -82,13 +83,12 @@ stateDiagram-v2
   candidate --> trial: repeated 2+ and high confidence
   trial --> proven: targeted interventions drop
   trial --> reverted: user contradicts it, or no effect
+  proven --> reverted: user contradicts it
   proven --> proven: optimize for tokens (re-trialled)
   trial --> stale: not loaded for N sessions
   proven --> stale: not loaded for N sessions
-  stale --> trial: used again
+  stale --> trial: used again (back to previous state)
   stale --> archived: idle longer
-  reverted --> [*]
-  archived --> [*]
 ```
 
 | State | Loaded? | Judged by |
@@ -97,18 +97,24 @@ stateDiagram-v2
 | trial | yes | **interventions** of its targeted kind |
 | proven | yes | **token cost** (same effect, fewer tokens) |
 | stale / archived | no | reader activity |
+| reverted | no | kept to block re-adding the same change |
 
-`pinned` records never move. Only reads (loaded, matched, surfaced) keep a record alive; selfim's own edits don't. Nothing is deleted.
+`pinned` records never move. Only reads (loaded, matched, surfaced) keep a record alive; selfim's own edits don't. Nothing is deleted: a revert is a forward commit that changes state.
 
 ## What a session pays
 
 ```mermaid
 flowchart TB
   R["record"] --> Q{"load level"}
-  Q -- always --> A1["rules.md / project index<br/>every session"]
-  Q -- trigger --> A2["selfim-area skill body,<br/>or pitfall warning<br/>only on match"]
+  Q -- always --> A1["rules.md / project index.md<br/>every session"]
+  Q -- trigger --> A2["skill body (global selfim-area<br/>or project selfim-project),<br/>or pitfall warning on match"]
   Q -- search --> A3["read on demand<br/>via index pointer"]
 ```
+
+| Skill layer | Holds | Visible in |
+|---|---|---|
+| global `selfim-<area>` (`~/.claude/skills`) | cross-project know-how | every session |
+| project `selfim-project` (`<project>/.claude/skills`, git-excluded) | that project's knowledge | that project only |
 
 A record stays `always` only while its impact pays for that cost; otherwise it drops to `trigger` or `search`. Skills are few and broad (one `selfim-<area>` per area) so their descriptions stay visible.
 
@@ -116,11 +122,13 @@ A record stays `always` only while its impact pays for that cost; otherwise it d
 
 | selfim changes automatically (traced, revertible) | selfim only suggests |
 |---|---|
-| `rules.md`, `selfim-*` skills, project knowledge | your CLAUDE.md, your own skills, your memory folder |
+| `rules.md`, `selfim-*` skills, project index, skill and triggers | your CLAUDE.md, your own skills, your memory folder |
+
+Data lives in one git repo (`~/.selfim` by default): `machines/<host>/`, `areas/<area>/`, `projects/<id>/`. Nothing selfim writes in a project is committed or shows in `git status`, and project data never crosses into other projects.
 
 ## Setup
 
-On first invoke the skill asks: where to put the runtime repo · which hook groups to install (core capture, signals, prompted notes, pitfall check, git) · project-only or machine-wide · review by hand or automatically after each session · backfill from past transcripts.
+selfim is **off by default**. Install the plugin, then run `/selfim` in a repo to enable it there. The first time, it asks: new runtime repo or clone an existing one · which hook groups to use (core capture, signals, prompted notes, pitfall check) · review by hand or automatically after each session · backfill from past transcripts. After that, `/selfim` in another repo just enables it; `selfim disable` turns it off.
 
 ## Design docs
 

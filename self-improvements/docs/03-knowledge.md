@@ -32,7 +32,7 @@ Knowledge records are curated by the review agent ([04-review.md](04-review.md))
 | source | observed · user · inferred (trust) |
 | load level | always · trigger · search ([06-outputs.md](06-outputs.md#load-levels)) |
 | targets | the intervention kind it should reduce |
-| helpful / harmful | counters, updated when it's surfaced |
+| state history | via git; counters (helpful/harmful, matches, use) live only in the derived stats database ([05-lifecycle.md](05-lifecycle.md#stats)) |
 | provenance | sessions and projects it came from |
 
 Facts carry a **last verified** date: stable facts are trusted without re-probing; past a limit they are marked stale and queued for one cheap re-check. Decisions carry **revisit when**: they resurface only when that condition matches.
@@ -43,7 +43,7 @@ Areas are inferred mechanically from commands and paths (`helm`/`charts/**` → 
 
 ## Project identity (my call)
 
-A project is keyed by its git remote URL (falling back to the repo root path). Subprojects inside one repo (e.g. `supermem/self-improvements/`) are declared as subpaths in the selfim repo's `registry.json`, so no marker files are written into project repos ([07-setup.md](07-setup.md#data-placement)). Worktrees and clones map to the same project. Sessions outside any known project go to `_unscoped`.
+A project is keyed by its git remote URL (falling back to the repo root path). Remotes are normalized (`host/owner/repo`, ssh and https alike, no `.git`). Subprojects inside one repo (e.g. `supermem/self-improvements/`) are declared as subpaths in the selfim repo's `registry.json` (at setup or with `selfim enable --subpath <dir>`); each subproject gets its own index and project skill, and a session counts as the subproject when its working directory is inside that subpath. No marker files are written into project repos ([07-setup.md](07-setup.md#data-placement)). Worktrees and clones map to the same project.
 
 ## Session note
 

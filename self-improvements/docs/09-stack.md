@@ -18,16 +18,17 @@ selfim/                          # plugin root (replaced on every update; holds 
 | Location | Holds |
 |---|---|
 | `${CLAUDE_PLUGIN_ROOT}` | code only; replaced on update |
-| runtime repo | everything in [07-setup.md](07-setup.md#runtime-repo). Chosen at setup; default `${CLAUDE_PLUGIN_DATA}` (survives updates) |
-| `~/.claude/skills/selfim-<area>/` | symlinks to generated skills in the runtime repo (`out/skills/`). Picked up live by Claude Code. Nothing is linked or written into project repos |
-| `<project>/.claude/settings.local.json` | plugin enablement for project-only mode (Claude Code keeps it out of git) |
+| runtime repo | everything in [07-setup.md](07-setup.md#data-placement). Chosen at setup; default `~/.selfim` (outlives the plugin) |
+| `${CLAUDE_PLUGIN_DATA}` | only a pointer to a non-default runtime repo location |
+| `~/.claude/skills/selfim-<area>/` | symlinks to global skills (`out/skills/`). Picked up live by Claude Code |
+| `<project>/.claude/skills/selfim-project/` | symlink to the project skill, listed in `.git/info/exclude` ([07-setup.md](07-setup.md#skill-layers)) |
 
-Install: plugin marketplace, or `--plugin-dir` for local development.
+Install: plugin marketplace (user scope), or `--plugin-dir` for local development. Activation is per project, in `registry.json` ([07-setup.md](07-setup.md#activation-off-by-default)).
 
 ## Runtime: Python ≥ 3.9, standard library only
 
 - Available wherever git is (macOS Command Line Tools ship both), standard on Linux. Startup measured at ~17–25 ms on this machine; bash+jq is ~5 ms but fragile for JSON; Go/Rust binaries need per-platform builds and signing; Node/Bun add a runtime.
-- Capture hooks run **async** so they never block Claude; matchers and `if` conditions keep hooks from spawning when irrelevant. The pre-command pitfall check is the only synchronous hot-path hook.
+- Each hook is split into a fast synchronous part (decide and inject) and an async part (log), so logging never blocks Claude; matchers and `if` conditions keep hooks from spawning when irrelevant. Every hook first checks whether the project is enabled and exits if not.
 - Hook modules import only `json`, `os`, `time`; heavier imports are deferred to the digest and review.
 - No `tomllib` (3.11+) or YAML parser in stdlib: record frontmatter is JSON (or a flat key/value subset).
 
@@ -67,10 +68,10 @@ Hook constraints that shape the design:
 Run from the CLI (`selfim review`), with the runtime repo as working directory:
 
 - `--output-format json --json-schema <changes schema>`: the agent returns proposed changes; selfim's own code applies, checks and commits them.
-- `--permission-mode dontAsk`, a short `--allowedTools` list (read and edit; no network, no arbitrary shell).
+- `--permission-mode dontAsk`, a short read-only `--allowedTools` list (no edit, no network, no arbitrary shell): the agent returns changes as JSON and selfim's code applies them.
+- `SELFIM_REVIEW=1` in its environment, so selfim's hooks skip the run; the user's settings, hooks and CLAUDE.md are excluded (`--bare` with an API key; otherwise the settings-source options, verified at build time).
 - `--max-budget-usd`, `--max-turns`, `--no-session-persistence`.
-- A `PreToolUse` guard denies any file path outside the runtime repo. That hook is the enforcement; permission rules alone are not treated as a sandbox.
-- `--bare` (skips the user's hooks, skills, plugins and CLAUDE.md) is used when an API key is available; subscription users run without it.
+- A `PreToolUse` guard denies any file path outside the runtime repo. That hook is the enforcement; permission rules alone are not treated as a sandbox. Anything the run needs from outside (excerpts of the user's own files) is prepared by a script beforehand ([04-review.md](04-review.md#who-runs-it)).
 
 Rejected: Agent SDK (more code, only needed for programmatic approval callbacks); in-session subagent (inherits the user's session and permissions; not isolated).
 
@@ -91,7 +92,8 @@ Claude Code's auto memory (`~/.claude/projects/<project>/memory/`) is the user's
 
 - whether `SessionEnd` fires after a hard kill (the design doesn't depend on it);
 - path-scoped syntax for `Edit` permission rules (the guard hook covers it);
-- whether plugin-shipped skills may be symlinks (generated skills are linked into user/project skill dirs instead).
+- whether a new skill folder added under `~/.claude/skills/` is picked up without `/reload-skills`;
+- the exact options for excluding user settings and CLAUDE.md from a `claude -p` run without `--bare`.
 
 ## Sources
 
