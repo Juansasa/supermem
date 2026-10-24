@@ -64,7 +64,7 @@ Capture itself is silent: hooks log evidence as you work, and a script digests e
 |---|---|
 | `/selfim` | the main entry. First time: settings + turn on for this repo. Later: turn on here if off, otherwise show status (queue, trials, cost vs. savings, suggestions) and offer to learn when a lot is unprocessed |
 | `/selfim learn` | learn from everything not yet processed: captured sessions and existing history. Shows the estimated cost first when it's large; record changes, one git commit each. On first use, `/selfim` offers exactly this |
-| `/selfim settings` | change the setup answers |
+| `/selfim settings` | data location, hook groups, when to learn, spending cap per learning run, backlog threshold. Internal tuning lives in the config file |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
 | `selfim note …` | used by the agent when prompted, not by people |

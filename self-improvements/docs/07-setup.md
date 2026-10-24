@@ -100,6 +100,20 @@ Setup also:
 
 Every answer can be changed later with `/selfim settings`.
 
+### What `/selfim settings` covers
+
+User-facing choices only **(my call)**:
+
+| Setting | Choices | Default |
+|---|---|---|
+| data location | the selfim repo: new, or a clone of an existing one | `~/.selfim` |
+| hook groups | signals, prompted notes, pitfall check (core capture is always on in enabled repos) | all on |
+| when to learn | by hand (`/selfim learn` + reminder), or automatically after each session | by hand |
+| spending cap per learning run | max tokens / USD one `/selfim learn` may spend | set at setup |
+| backlog threshold | how much unprocessed data (estimated learning cost) builds up before `/selfim` offers to learn | set at setup |
+
+All other tunable values (size limits, trial and stale windows, note-prompt caps, retention, cost-guard window, similarity thresholds) live in `machines/<host-id>/config.json` with defaults, for anyone who wants to tune them; `/selfim settings` doesn't ask about them.
+
 ## Commands
 
 The user: "ensure selfim arg have intuitive naming". One entry point; everything else is a plain verb **(my call)**:
@@ -108,7 +122,7 @@ The user: "ensure selfim arg have intuitive naming". One entry point; everything
 |---|---|
 | `/selfim` | the main entry: turns selfim on here (first time: settings questions), shows status, and offers to learn from history when there's a lot unprocessed |
 | `/selfim learn` | learn from everything not yet processed: captured sessions and existing history (past sessions, git commits, repo structure). Shows the estimated cost first when it's large. This is what `/selfim` offers on first use (the user: "to me selfim running first time is /selfim learn if prompted") |
-| `/selfim settings` | change the setup answers |
+| `/selfim settings` | change the five user-facing settings ([What `/selfim settings` covers](#what-selfim-settings-covers)) |
 | `/selfim on` / `/selfim off` | turn selfim on or off for this repo; turning off keeps the data |
 | `/selfim on <dir>` | treat a folder of this repo as its own subproject |
 | `selfim note …` | used by the agent when prompted, not by people |
