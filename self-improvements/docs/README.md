@@ -20,3 +20,4 @@ For the overview and diagrams of the workflow, see the [project README](../READM
 | [06-outputs.md](06-outputs.md) | what sessions get: ownership, rule file and `selfim-*` skills, size caps, load levels, pitfall check |
 | [07-setup.md](07-setup.md) | runtime repo, layout, first-invoke setup, where the source lives |
 | [08-open.md](08-open.md) | Claude's calls to check, what's left to the builder, ideas borrowed and from where |
+| [09-stack.md](09-stack.md) | tooling: plugin packaging, runtime, capture sources, storage, git, review agent, supporting pieces |

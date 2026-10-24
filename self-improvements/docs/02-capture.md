@@ -16,7 +16,11 @@ The user: "make use of claude hooks to add hooks to relevant hooks to helps the 
 | SessionEnd | queue for review | the normal hand-off. The user: "a hook to run it before closing a session or before compaction is optimal" |
 | git post-commit (optional) | commit tagged with the session that made it | ties progress and outcomes to sessions |
 
-Progress mostly comes free: the agent's todo/task tool calls are in the transcript and the digest extracts them. Exact hook event names and payloads are checked against current Claude Code docs at build time.
+Also used: `PermissionDenied` and `PostToolUseFailure` deliver denials and failures directly.
+
+**Hook payloads are the primary source.** The transcript format is internal to Claude Code and changes between versions, so only token usage is read from it, in one tolerant module; if that breaks, capture continues without token stats ([09-stack.md](09-stack.md#capture-sources-hook-payloads-first)). Capture hooks run async; `SessionEnd` only enqueues (1.5 s budget, not guaranteed on crash), and the per-turn `Stop` checkpoint is what makes capture reliable.
+
+Progress mostly comes free: the agent's todo/task tool calls arrive through tool hook payloads and the digest extracts them.
 
 The skill can also be invoked by hand mid-session; that queues the session the same way. Which hook groups are installed is a setup choice ([07-setup.md](07-setup.md#setup-first-invoke)).
 
@@ -40,7 +44,7 @@ Notes are session evidence with `source: noted` (higher precision than extracted
 
 ## Digest (script, zero tokens)
 
-Before any LLM reads anything, a script reduces the transcript to a compact digest of the moments that matter:
+Before any LLM reads anything, a script reduces the session's hook records, notes and (for token usage) the transcript to a compact digest of the moments that matter:
 
 - failed commands and errors (with the command that fixed them, if any)
 - user interventions: corrections, tool-call denials, interrupts, repeated explanations
@@ -51,7 +55,7 @@ Before any LLM reads anything, a script reduces the transcript to a compact dige
 - token usage for the session (from the usage figures in the transcript)
 - selfim's own surfacing: what was injected at session start, which `selfim-*` skills loaded, which pitfall warnings/blocks fired and what the agent did next
 
-The LLM reads the digest, never the full transcript.
+The LLM reads the digest, never the full transcript. If a needed detail is missing from the payloads, the digest may look it up in the transcript by its stored pointer, tolerating format changes.
 
 ## Session evidence
 

@@ -16,18 +16,22 @@ Suggested layout **(my call)**:
   stats/                   # rebuilt from log/; gitignored, not committed
 ```
 
+## Install
+
+selfim ships as a Claude Code **plugin** (hooks + the `selfim` skill + a `selfim` CLI), installed from a plugin marketplace or, for development, with `--plugin-dir` ([09-stack.md](09-stack.md#packaging-a-claude-code-plugin)). The plugin folder holds code only; all state lives in the runtime repo.
+
 ## Setup (first invoke)
 
 The user: "When user import/invoke this skill it should prompt user about where to store its runtime data", and "user decide if they want to add it to their hook skill should prompt this for setup". On first invoke, the skill asks, one prompt each, and records the answers in the repo:
 
-1. **Where to store runtime data** (creates and `git init`s the repo).
+1. **Where to store runtime data** (creates and `git init`s the repo). Default: the plugin's persistent data folder (`${CLAUDE_PLUGIN_DATA}`), which survives plugin updates.
 2. **Which hook groups to install** (each shown with what it does; see [02-capture.md](02-capture.md#hooks)):
    - **core capture:** SessionStart (incl. loading), Stop checkpoint, SubagentStop, PreCompact, SessionEnd. Without it, capture runs only when the skill is invoked by hand.
    - **signals:** correction flags (UserPromptSubmit), failure/fix pairs (PostToolUse).
    - **prompted notes:** the agent is asked for a structured note at moments worth recording ([02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable)).
    - **pitfall check:** warn/block before commands ([06-outputs.md](06-outputs.md#pre-command-pitfall-check)).
    - **git:** post-commit hook tagging commits with their session, optional.
-3. **Where selfim is active:** this project only, or every session on the machine. This scopes the hooks **and** where the `selfim-*` skills are linked, so their descriptions don't load in sessions where selfim is off. Suggested default: this project only **(my call)**.
+3. **Where selfim is active:** this project only, or every session on the machine. This scopes the hooks (plugin enabled for the project or the user) **and** where the `selfim-*` skills are linked (`<project>/.claude/skills/` or `~/.claude/skills/`, as symlinks into the runtime repo), so their descriptions don't load in sessions where selfim is off. Suggested default: this project only **(my call)**.
 4. **What starts the review step:** by hand (`/selfim review`), with a one-line reminder from the session-start hook when the queue passes a threshold; or automatically in the background after a session ends. Suggested default: by hand **(my call)**, since background runs spend tokens unattended. Either way, once a review runs its changes apply automatically; with the by-hand default, nothing improves until a review is started.
 5. **Backfill** from existing transcripts ([02-capture.md](02-capture.md#backfill-my-call)). Default: off.
 

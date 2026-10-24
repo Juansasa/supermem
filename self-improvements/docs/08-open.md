@@ -21,7 +21,7 @@
 | 15 | Pitfall check warns by default; proven pitfalls may block | [06-outputs.md](06-outputs.md#pre-command-pitfall-check) |
 | 16 | Repo layout | [07-setup.md](07-setup.md#runtime-repo) |
 | 17 | Setup defaults: active in this project only; review started by hand | [07-setup.md](07-setup.md#setup-first-invoke) |
-| 18 | Scripts use Python 3 standard library only (no dependencies), for portability | — |
+| 18 | Plugin packaging; Python ≥3.9 stdlib; JSONL + markdown/JSON-frontmatter in git; derived SQLite; git CLI with trailers; `claude -p` review with guard hook; built-in redaction; shingle-Jaccard dedup | [09-stack.md](09-stack.md) |
 | 19 | Hook set and what each records | [02-capture.md](02-capture.md#hooks) |
 | 20 | Prompted-note moments and guards (one per turn, session cap, no Stop prompt twice in a row, skip if note exists); prompt types measured and turned off when unproductive | [02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable) |
 | 21 | Concision rules and limits for hook entries, notes and digests (pointers not copies, ~300-byte lines, successes as counts, one-line errors, digest budget ~1–2k tokens) | [02-capture.md](02-capture.md#keeping-captured-data-concise) |

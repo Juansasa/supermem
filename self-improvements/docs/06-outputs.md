@@ -29,6 +29,7 @@ Each record's load level decides where it appears and what it costs:
 
 - `selfim-*` are ordinary Claude Code skills. A session pays only their one-line descriptions until the body loads. A helm session never pays for gitops rules.
 - The project index is one line per item, for the current project only.
+- Hard limit: rule file + project index together stay under 10,000 characters, Claude Code's cap on context injected at session start.
 - Which level a record gets is driven by its value ([05-lifecycle.md](05-lifecycle.md#impact-vs-token-cost)).
 
 ## Pre-command pitfall check

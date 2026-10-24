@@ -1,6 +1,6 @@
 # selfim
 
-A Claude Code skill + hooks that make agent sessions improve over time. It captures what happens in sessions, turns repeated issues into facts, rules and area skills, measures whether they reduce user interventions at an acceptable token cost, and promotes, demotes or reverts them. Every change is a git commit with what, why and evidence.
+A Claude Code plugin (skill + hooks + CLI) that makes agent sessions improve over time. It captures what happens in sessions, turns repeated issues into facts, rules and area skills, measures whether they reduce user interventions at an acceptable token cost, and promotes, demotes or reverts them. Every change is a git commit with what, why and evidence.
 
 > Status: design draft. Full design in [docs/](docs/README.md). Nothing is built yet.
 
@@ -134,3 +134,4 @@ On first invoke the skill asks: where to put the runtime repo · which hook grou
 | [06-outputs](docs/06-outputs.md) | ownership, skills, size caps, load levels, pitfall check |
 | [07-setup](docs/07-setup.md) | runtime repo layout, setup prompts |
 | [08-open](docs/08-open.md) | open design calls to review, builder's choices, prior art |
+| [09-stack](docs/09-stack.md) | tooling: plugin, Python stdlib, storage, git trailers, `claude -p` review |
