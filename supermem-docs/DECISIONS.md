@@ -63,3 +63,12 @@ Proposals that haven't been agreed live in PROPOSALS.md. Gaps in numbering are e
 ## D-19 · 2026-10-22 · Diagrams in Mermaid, for now
 - **Basis:** "go with mermaid for now then" (P-31)
 - **Revisit when:** Mermaid's layout can't hold the system map, or an interactive walkthrough is wanted.
+
+## D-20 · 2026-10-22 · ⛔ superseded by D-21 · Skills hold area-wide know-how; procedures go to skills, not records
+- **Basis:** "remember we also have skills and will use skills if that covers many of the areas" (in reply to where procedures should live, P-35)
+- **Consequence:** no `procedure` record kind. How records relate to skills is in P-35 revision 1.
+
+## D-21 · 2026-10-22 · Records serve two roles: knowledge surfaced at pickup, and raw material for skill distillation
+- **Basis:** "remember we also have skills and will use skills if that covers many of the areas", then "What records are for is also to support skill distilation"
+- **Supersedes:** D-20. Claude's headline there, "procedures go to skills, not records", was too strong.
+- **Consequence:** area-wide know-how, procedures included, is captured as records and distilled into skills. Skills remain the home for area-wide know-how. Still no `procedure` record kind.
