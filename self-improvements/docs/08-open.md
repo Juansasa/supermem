@@ -15,6 +15,7 @@
 | 9 | Secrets redacted before writing; raw transcripts never copied | [02-capture.md](02-capture.md#secrets-my-call) |
 | 10 | Bootstrap sources (transcripts, git history, repo structure, native memory), cost estimate before running, straight-to-trial for findings that already repeat | [02-capture.md](02-capture.md#bootstrap-on-first-enable) |
 | 10a | Native memory and instructions read as "already known"; never re-injected | [02-capture.md](02-capture.md#native-sources-read-only) |
+| 10b | Processed-data cursors per stage and source, kept in git; every stage idempotent | [02-capture.md](02-capture.md#processed-data-cursors) |
 | 11 | Remote-system facts carry their explicit target and never leave their project | [03-knowledge.md](03-knowledge.md#scopes) |
 | 12 | Project identity: normalized remote, fallback root path, subprojects declared in `registry.json` | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
 | 13 | Goals/progress only as a short per-session note | [03-knowledge.md](03-knowledge.md#session-note) |

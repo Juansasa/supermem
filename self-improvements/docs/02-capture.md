@@ -69,6 +69,22 @@ The digest runs **automatically** at SessionEnd, PreCompact and in the catch-up 
 
 Resumed sessions are digested again from their last offset only; forks are counted from the fork point, so the parent's history isn't counted twice. The LLM reads the digest, never the full transcript. If a needed detail is missing from the payloads, the digest may look it up in the transcript by its stored pointer, tolerating format changes.
 
+## Processed-data cursors
+
+The user: "keep track of already processed data somehow so it doesnt reconsume same data". Every stage records what it has consumed, **in git** (not in `.cache/`, so deleting the cache or moving to another machine never causes reprocessing), and every stage is idempotent: running it twice on the same input changes nothing **(my call)**.
+
+| Source → stage | Cursor | Stored in |
+|---|---|---|
+| transcript → digest | last digested message id/offset per session; resumes and forks continue from it | marker lines in the session's own log (`projects/<id>/log/<session_id>.jsonl`) |
+| hook records → digest | everything after the last `digested` marker in the same log | same file |
+| digest → review | digest ids consumed by each review run | `reviews/<date>.jsonl` and the evidence commit's trailers |
+| queue | digests not yet consumed by any review: derived, never stored as truth | rebuilt into `.cache/` |
+| git history → bootstrap and later runs | last processed commit per branch; commits are deduplicated by sha, so rebases and merges don't count twice | `projects/<id>/project.json` |
+| past transcripts → bootstrap | session ids already processed; a session with an existing log is never re-read | the logs themselves |
+| native memory and instructions | content hash per file; re-read only when the hash changes | `projects/<id>/project.json` (machine-level files: `machines/<host-id>/config.json`) |
+
+A digest records the version of the digest script that produced it. A newer script version only re-digests on an explicit `selfim migrate`, never silently.
+
 ## Session evidence
 
 Hook records, prompted notes and digests are the **session-evidence layer**: immutable, stored as JSONL per session under the project it belongs to (`projects/<id>/log/`; sessions outside any project are not captured, since selfim is enabled per project; see [07-setup.md](07-setup.md#data-placement)). All counting ([05-lifecycle.md](05-lifecycle.md#stats)) comes only from this layer. Knowledge records ([03-knowledge.md](03-knowledge.md)) are curated from it. Evidence is committed by the review in a separate evidence commit before its decision commits ([04-review.md](04-review.md#apply-and-trace)).
