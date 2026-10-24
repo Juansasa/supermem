@@ -67,6 +67,53 @@ Consequences:
 - **No-impact records are demoted** even if they're used: used but not changing outcomes is cost without value.
 - **System trend per project and area:** injected tokens per session, total session tokens, interventions per session. selfim is working when interventions fall without injected tokens creeping up.
 
+## Long-term metrics
+
+Script-computed from evidence unless marked; they feed periodic reviews and the transitions above.
+
+**Outcome (headline)**
+
+| Metric | Why |
+|---|---|
+| turns between interventions | single headline number; rises as selfim works |
+| redundant probes (re-checking facts known to be stable) | measures "keeps checking systems that never change" |
+| re-asks (asking about something already decided) · *review-agent judgment* | measures "checking what I've confirmed" |
+| retries before success after a failure | shows whether pitfalls shorten the path to a fix |
+
+**Per record (drives promotion and demotion)**
+
+| Metric | Drives |
+|---|---|
+| warning precision (warned, and the command really was bad) vs. false alarms | tighten or drop noisy triggers; only precise pitfalls may block |
+| misses (known pitfall recurred, no warning fired) | widen the trigger |
+| ignored rate (warned, agent went ahead, failed anyway) | rewrite the wording, or raise to block |
+| churn (edits over time, flip-flopping) | freeze the record, or ask the user |
+| projects proven in | project → area promotion |
+| fact volatility (re-checks that found the fact changed) | how long a fact is trusted before re-checking |
+
+**Knowledge-base health**
+
+| Metric | Why |
+|---|---|
+| coverage gaps (interventions and failures per area with no matching record) | where knowledge is missing; costliest areas first |
+| library shape (records per state, cap fill, share of the always-loaded budget, stale ratio) | early warning of bloat |
+| contradictions (records conflicting with each other or the user's files) · *review-agent judgment* | resolve first; they mislead |
+
+**Review quality**
+
+| Metric | Why |
+|---|---|
+| revert rate per change type (add, patch, merge, optimize) | be more cautious where selfim is often wrong |
+| suggestion acceptance for user-owned files | calibrates what's worth suggesting |
+| manual reverts by the user vs. automatic ones | a manual revert is a strong "selfim got it wrong" signal |
+
+**Fair comparison**
+
+- Each session records the **model and Claude Code version**, so a model upgrade isn't credited or blamed on a record.
+- Rates are **normalized by activity in the area** (per session in that area), not raw totals.
+
+Thresholds tied to these metrics are **my call**, tunable.
+
 ## Whole-solution ledger
 
 The user asked whether selfim tracks "total token use for the whole selfim solution as a whole including hooks". Every cost selfim causes is recorded in one ledger, so its overhead can be set against its savings:

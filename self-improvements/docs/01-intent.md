@@ -34,7 +34,7 @@ Failure means the same issues keep requiring the user's intervention. Worse is "
 - Simplicity and optimal token use come first. The user: "We need to find solutions that keep siplicity and produce optimal token usage."
 - Global knowledge is fine only if "cheap to retrive and use, cheap means low token use".
 - `selfim` keeps its own logs and decision metadata, independent from CLAUDE.md.
-- One global git repo for all runtime data, local, pushable later.
+- One global git repo for all runtime data, local, pushable later. Every datum has one defined home by scope, and nothing is written into project repos ([07-setup.md](07-setup.md#data-placement)).
 - The skill must be importable by others: on first invoke it asks the user where to store its runtime data ([07-setup.md](07-setup.md)).
 
 ## Non-goals

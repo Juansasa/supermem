@@ -19,7 +19,8 @@ selfim/                          # plugin root (replaced on every update; holds 
 |---|---|
 | `${CLAUDE_PLUGIN_ROOT}` | code only; replaced on update |
 | runtime repo | everything in [07-setup.md](07-setup.md#runtime-repo). Chosen at setup; default `${CLAUDE_PLUGIN_DATA}` (survives updates) |
-| `~/.claude/skills/selfim-<area>/` or `<project>/.claude/skills/selfim-<area>/` | symlinks to generated skills in the runtime repo, placed according to where selfim is active. Picked up live by Claude Code |
+| `~/.claude/skills/selfim-<area>/` | symlinks to generated skills in the runtime repo (`out/skills/`). Picked up live by Claude Code. Nothing is linked or written into project repos |
+| `<project>/.claude/settings.local.json` | plugin enablement for project-only mode (Claude Code keeps it out of git) |
 
 Install: plugin marketplace, or `--plugin-dir` for local development.
 

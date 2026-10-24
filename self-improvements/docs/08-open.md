@@ -10,7 +10,7 @@
 | 4 | Secrets redacted before writing; raw transcripts never copied | [02-capture.md](02-capture.md#secrets-my-call) |
 | 5 | Optional bounded backfill, default off | [02-capture.md](02-capture.md#backfill-my-call) |
 | 6 | Remote-system facts carry their explicit target and never leave their project | [03-knowledge.md](03-knowledge.md#scopes) |
-| 7 | Project identity: git remote, fallback root path, `.selfim-project` marker | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
+| 7 | Project identity: git remote, fallback root path, subprojects declared in `registry.json` | [03-knowledge.md](03-knowledge.md#project-identity-my-call) |
 | 8 | Goals/progress only as a short per-session note | [03-knowledge.md](03-knowledge.md#session-note) |
 | 9 | High confidence = 2+ occurrences, observed or user-sourced, never harmful | [04-review.md](04-review.md#when-something-new-is-added) |
 | 10 | Lifecycle thresholds (trial window, stale and archive windows) | [05-lifecycle.md](05-lifecycle.md#transitions) |
@@ -19,13 +19,15 @@
 | 13 | Size caps on the rule file and each skill | [06-outputs.md](06-outputs.md#output-shape) |
 | 14 | Rule file and project index injected by a session-start hook, not by editing CLAUDE.md | [06-outputs.md](06-outputs.md#load-levels) |
 | 15 | Pitfall check warns by default; proven pitfalls may block | [06-outputs.md](06-outputs.md#pre-command-pitfall-check) |
-| 16 | Repo layout | [07-setup.md](07-setup.md#runtime-repo) |
+| 16 | Repo layout and placement rules (nothing in project repos, one home per scope, no crossing between projects, evidence retention N days) | [07-setup.md](07-setup.md#data-placement) |
 | 17 | Setup defaults: active in this project only; review started by hand | [07-setup.md](07-setup.md#setup-first-invoke) |
 | 18 | Plugin packaging; Python ≥3.9 stdlib; JSONL + markdown/JSON-frontmatter in git; derived SQLite; git CLI with trailers; `claude -p` review with guard hook; built-in redaction; shingle-Jaccard dedup | [09-stack.md](09-stack.md) |
 | 19 | Hook set and what each records | [02-capture.md](02-capture.md#hooks) |
 | 20 | Prompted-note moments and guards (one per turn, session cap, no Stop prompt twice in a row, skip if note exists); prompt types measured and turned off when unproductive | [02-capture.md](02-capture.md#prompted-notes-high-precision-when-applicable) |
 | 21 | Concision rules and limits for hook entries, notes and digests (pointers not copies, ~300-byte lines, successes as counts, one-line errors, digest budget ~1–2k tokens) | [02-capture.md](02-capture.md#keeping-captured-data-concise) |
 | 22 | Whole-solution ledger: cached vs. first-time tokens counted separately; overhead-exceeds-savings guard over N sessions | [05-lifecycle.md](05-lifecycle.md#whole-solution-ledger) |
+| 23 | Long-term metrics set (outcome, per record, health, review quality, fair comparison) and their thresholds | [05-lifecycle.md](05-lifecycle.md#long-term-metrics) |
+| 24 | Layout aligned with Claude Code sessions (session_id file names, subagents in parent file, resume/fork, digest before `cleanupPeriodDays` expiry) | [07-setup.md](07-setup.md#borrowed-from-claude-codes-own-sessions) |
 
 ## Left to the builder
 

@@ -4,7 +4,7 @@
 
 | Scope | Holds | Example |
 |---|---|---|
-| **machine** | facts about the machine the agent runs on; shared by all projects | OS version, installed tools, Colima not Docker Desktop, local limitations |
+| **machine** | facts about the machine the agent runs on (one folder per host); shared by all projects on it | OS version, installed tools, Colima not Docker Desktop, local limitations |
 | **area (global)** | know-how about a working area, not tied to one project | helm, gitops, operations, machine access |
 | **project** | remote systems and project specifics; never leaks to other projects | clusters, registries, hosts, gitops layout, design decisions, standards |
 
@@ -43,7 +43,7 @@ Areas are inferred mechanically from commands and paths (`helm`/`charts/**` → 
 
 ## Project identity (my call)
 
-A project is keyed by its git remote URL (falling back to the repo root path), overridable by a `.selfim-project` marker file in a subdirectory. That covers repos holding more than one system (e.g. `supermem/self-improvements/`), and makes worktrees and clones map to the same project.
+A project is keyed by its git remote URL (falling back to the repo root path). Subprojects inside one repo (e.g. `supermem/self-improvements/`) are declared as subpaths in the selfim repo's `registry.json`, so no marker files are written into project repos ([07-setup.md](07-setup.md#data-placement)). Worktrees and clones map to the same project. Sessions outside any known project go to `_unscoped`.
 
 ## Session note
 

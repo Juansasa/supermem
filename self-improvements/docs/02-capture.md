@@ -60,7 +60,7 @@ The LLM reads the digest, never the full transcript. If a needed detail is missi
 
 ## Session evidence
 
-The digests, together with hook records and prompted notes, are the **session-evidence layer**: immutable, stored as JSONL in the runtime repo's `log/`. All counting ([05-lifecycle.md](05-lifecycle.md#stats)) comes only from this layer. Knowledge records ([03-knowledge.md](03-knowledge.md)) are curated from it.
+The digests, together with hook records and prompted notes, are the **session-evidence layer**: immutable, stored as JSONL per session under the project it belongs to (`projects/<id>/log/`, or `projects/_unscoped/log/`; see [07-setup.md](07-setup.md#data-placement)). All counting ([05-lifecycle.md](05-lifecycle.md#stats)) comes only from this layer. Knowledge records ([03-knowledge.md](03-knowledge.md)) are curated from it.
 
 ## Keeping captured data concise
 
