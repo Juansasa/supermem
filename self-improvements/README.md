@@ -128,6 +128,26 @@ Four rules hold it together:
 3. **Real sessions are the test set.** Each review saves the hardest sessions (many corrections, repeated failures) as concise benchmark cases; `/selfim benchmark` replays them to measure whether selfim actually helps.
 4. **Git is the decision log.** One change per commit (what, why, evidence, expected effect, expected cost). Undo is a forward commit (restore the previous version, or mark the record `reverted`), never `git revert`; `/selfim drop <id>` does it by hand.
 
+## The four stages
+
+| Stage | What | How | Why |
+|---|---|---|---|
+| **Collection** | workflow and process from every session: commands, outcomes, failures and fixes, your corrections and decisions, tokens; plus a scorecard per session | hooks (scripts, no LLM) write concise, content-free evidence; a script digests each session when it ends | relearning starts with forgetting; capture must cost the session nothing |
+| **Distillation** | turns repeated evidence into records (fact, decision, pitfall, procedure, rule) and skills (`selfim-<area>`, `selfim-project`) | `/selfim learn`: one offline agent judges, code checks its evidence; patch before create, one commit per change | knowledge only helps once it's general, small and loaded where relevant |
+| **Benchmarking** | your hardest real sessions (many corrections, repeated failures) as replayable test cases | review extracts concise cases; `/selfim benchmark` replays them with and without selfim's knowledge | proves on real hard work that selfim helps, and that cheaper versions didn't make it worse |
+| **Promotion** | moves records through trial → proven → stale, and project → area scope; demotes or reverts the rest | scripts measure recurrence and token cost; transitions applied automatically, approval only for repo-derived records | keep only what stops issues, at the lowest token cost |
+
+When a record moves:
+
+| Issue repeated (2+) | You stated or confirmed it | From commit messages or repo files | Issue recurs while loaded | Result |
+|:-:|:-:|:-:|:-:|---|
+| no | no | – | – | stays a **candidate** (not loaded) |
+| yes | – | no | – | goes on **trial** (loaded) |
+| – | yes | no | – | goes on **trial** at once |
+| yes / – | – | yes | – | **trial at trigger level**; always-loaded, global or blocking needs your approval |
+| – | – | – | no, over enough sessions | **proven** → then optimized for tokens |
+| – | – | – | yes (2+), or you contradict it | **reverted** (kept, blocks re-adding) |
+
 ## A session, step by step
 
 ```mermaid
